@@ -4057,8 +4057,11 @@ int bsp_h3c_localmsg_to_file (char *buf, long len, int log_level, const char * s
             u64 timezone_sec_diff = sys_tz.tz_minuteswest * 60;
             rtc_time_to_tm(get_seconds() - timezone_sec_diff, &tm);
             len_s = sprintf(log_str, "%04d-%02d-%02d %02d:%02d:%02d %s\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, buf);
-
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,19,0)
             ret = kernel_write (pfile, log_str, len_s, &pos);
+#else
+            ret = kernel_write (pfile, log_str, len_s, pos);
+#endif
 		    if (0 > ret) {
 		    	printk (KERN_ERR "Error writing local msg file: %s.\n", curr_h3c_log_file);
 		    }

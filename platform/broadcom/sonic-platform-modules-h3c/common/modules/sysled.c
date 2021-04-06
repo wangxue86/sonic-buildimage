@@ -476,7 +476,7 @@ static void bsp_sysled_work_handler (struct work_struct *work)
 }
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
-static void bsp_sysled_timer_proc (unsigned int data)
+static void bsp_sysled_timer_proc (unsigned long data)
 #else
 static void bsp_sysled_timer_proc (struct timer_list *timer)
 #endif

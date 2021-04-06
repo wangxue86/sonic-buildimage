@@ -2723,7 +2723,12 @@ int bsp_xcvr_read_splitable_port_file(char *path)
         return ERROR_FAILED;
     } else {
         memset (buf_data, '\0', 20 * 1024);
+
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(4, 19, 0)
+        len = kernel_read (pfile, pos, buf_data, 20 * 1024);
+#else
         len = kernel_read (pfile, buf_data, 20 * 1024, &pos);
+#endif
         if (len < 0) {
             kfree(buf_data);
             return ERROR_FAILED;
