@@ -97,7 +97,7 @@ int h3c_bsp_dbg_print (u32 line, char *file, char *func, enum DBG_LOG_LEVEL leve
 {
     int i = 0;
     int len = 0;
-    va_list arges = {0};
+    va_list arges = {{0}};
     char tmpbuf[H3C_SWITCH_RECDITEM_LEN_MAX];
     char item[256];
     char *module = NULL;
