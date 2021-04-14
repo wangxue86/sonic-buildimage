@@ -86,6 +86,7 @@ binary-indep:
 		dh_installdirs -p$(PACKAGE_PRE_NAME)-$${mod} usr/lib/; \
 		dh_installdirs -p$(PACKAGE_PRE_NAME)-$${mod} usr/share/sonic/device/x86_64-h3c_$${mod}-r0/; \
 		cp $(MOD_SRC_DIR)/$${mod}/$(DEVICE_DIR)/*py2*.whl debian/$(PACKAGE_PRE_NAME)-$${mod}/usr/share/sonic/device/x86_64-h3c_$${mod}-r0/;\
+		cp $(MOD_SRC_DIR)/$${mod}/$(DEVICE_DIR)/*py3*.whl debian/$(PACKAGE_PRE_NAME)-$${mod}/usr/share/sonic/device/x86_64-h3c_$${mod}-r0/;\
 		cp $(MOD_SRC_DIR)/$(MODULE_DIR_COMMON)/$(MODULE_DIR)/dom-fpga/*.ko $(MOD_SRC_DIR)/$${mod}/$(MODULE_DIR)/;\
 		cp $(MOD_SRC_DIR)/$(MODULE_DIR_COMMON)/$(MODULE_DIR)/*.ko $(MOD_SRC_DIR)/$${mod}/$(MODULE_DIR)/;\
 		cp $(MOD_SRC_DIR)/$(MODULE_DIR_COMMON)/$(TOOLS_DIR)/*     debian/$(PACKAGE_PRE_NAME)-$${mod}/usr/local/bin/;\
