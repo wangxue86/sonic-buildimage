@@ -16,7 +16,7 @@ target/
 *.buildinfo
 *.tar
 *.xz
-*.gz
+#*.gz
 *-dbg
 *dbg.j2
 *.img
