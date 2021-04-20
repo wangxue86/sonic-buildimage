@@ -49,26 +49,8 @@ install_driver () {
 
 rename_mgmt_port_to_eth0 () {
 
-        MGMT_PCI_BUS_NO=`lspci | grep "Gigabit Network Connection" | sed 's/ /\n/g' | sed -n '1p'`
-        ETH_LIST="eth0 eth1 eth2 eth3"
-        MGMT_CURR_ETH=""
-                          
-        for e in $ETH_LIST
-        do
-                if [ -z "$(ethtool -i ${e} | grep $MGMT_PCI_BUS_NO)" ]; then
-                        logger "${e} is not mgmt port"
-                else
-                        MGMT_CURR_ETH=${e}
-                        logger "found mgmt port current at ${e}"
-                        break
-                fi
-        done
-                                      
-        if [ -z $MGMT_CURR_ETH ]; then
-                logger "not found mgmt port in $ETH_LIST"
-                return
-		
-        fi
+        #MGMT_PCI_BUS_NO=`lspci | grep "Gigabit Network Connection" | sed 's/ /\n/g' | sed -n '1p'`
+        MGMT_CURR_ETH="eth1"
                                              
         if [ $MGMT_CURR_ETH != 'eth0' ]; then
                 ifconfig $MGMT_CURR_ETH down
