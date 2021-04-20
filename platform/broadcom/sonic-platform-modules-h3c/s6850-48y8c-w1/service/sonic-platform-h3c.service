@@ -3,7 +3,7 @@
 
 [Unit]
 Description=sonic-platfrom-h3c kernel restore service
-After=pmon.service
+#After=pmon.service
 
 [Service]
 Type=oneshot
