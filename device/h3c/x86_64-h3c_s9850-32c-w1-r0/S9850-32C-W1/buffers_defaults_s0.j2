@@ -1,0 +1,118 @@
+{%- set default_cable = '100m' %}
+
+{%- set ports2cable = {
+    'torrouter_server'     : '10m',
+    'podrouter_torrouter'  : '100m',
+    'spinerouter_podrouter': '300m'
+    }
+-%}
+
+{%- macro generate_port_lists(PORT_ALL) %}
+    {# Generate list of ports #}
+    {% for port_idx in range(0,32) %}
+        {% if PORT_ALL.append("Ethernet%d" % (port_idx * 4)) %}{% endif %}
+    {% endfor %}
+{%- endmacro %}
+
+{%- macro generate_buffer_pool_and_profiles(rdma_status='enable') %}
+    "BUFFER_POOL": {
+        "ingress_pool": {
+{% if rdma_status == 'enable' %}
+            "size": "29857792",
+            "xoff": "2250752",
+{% else %}
+            "size": "32194560",
+{% endif %}
+            "type": "ingress",
+{% if rdma_status == 'enable' %}
+            "mode": "dynamic"
+{% else %}
+            "mode": "static"
+{% endif %}
+        },
+{% if rdma_status == 'enable' %}
+        "egress_lossless_pool": {
+            "size": "32194560",
+            "type": "egress",
+            "mode": "static"
+        },
+{% endif %}
+        "egress_lossy_pool": {
+{% if rdma_status == 'enable' %}
+            "size": "29255680",
+{% else %}
+            "size": "31506432",
+{% endif %}
+            "type": "egress",
+            "mode": "dynamic"
+        }
+    },
+    "BUFFER_PROFILE": {
+        "ingress_lossy_profile": {
+            "pool": "[BUFFER_POOL|ingress_pool]",
+            "size": "0",
+{% if rdma_status == 'enable' %}
+            "static_th": "29857792"
+{% else %}
+            "static_th": "32194560"
+{% endif %}
+        },
+{% if rdma_status == 'enable' %}
+        "egress_lossless_profile": {
+            "pool": "[BUFFER_POOL|egress_lossless_pool]",
+            "size": "0",
+            "static_th": "32194560"
+        },
+{% endif %}
+        "egress_lossy_profile": {
+            "pool": "[BUFFER_POOL|egress_lossy_pool]",
+            "size": "1536",
+            "dynamic_th": "3"
+        }
+    },
+{%- endmacro %}
+
+{%- macro generate_pg_profils(port_names, rdma_status='enable') %}
+    "BUFFER_PG": {
+{% for port in port_names.split(',') %}
+{% if rdma_status == 'enable' %}
+        "{{ port }}|0-4": {
+            "profile": "[BUFFER_PROFILE|ingress_lossy_profile]"
+        },
+        "{{ port }}|6": {
+            "profile": "[BUFFER_PROFILE|ingress_lossy_profile]"
+        }{% if not loop.last %},{% endif %}
+
+{% else %}
+        "{{ port }}|0-6": {
+            "profile": "[BUFFER_PROFILE|ingress_lossy_profile]"
+        }{% if not loop.last %},{% endif %}
+
+{% endif %}
+{% endfor %}
+    },
+{%- endmacro %}
+
+{%- macro generate_queue_buffers(port_names, rdma_status='enable') %}
+    "BUFFER_QUEUE": {
+{% for port in port_names.split(',') %}
+{% if rdma_status == 'enable' %}
+        "{{ port }}|0-4": {
+            "profile": "[BUFFER_PROFILE|egress_lossy_profile]"
+        },
+        "{{ port }}|5": {
+            "profile": "[BUFFER_PROFILE|egress_lossless_profile]"
+        },
+        "{{ port }}|6": {
+            "profile": "[BUFFER_PROFILE|egress_lossy_profile]"
+        }{% if not loop.last %},{% endif %}
+
+{% else %}
+        "{{ port }}|0-6": {
+            "profile": "[BUFFER_PROFILE|egress_lossy_profile]"
+        }{% if not loop.last %},{% endif %}
+
+{% endif %}
+{% endfor %}
+    }
+{%- endmacro %}
