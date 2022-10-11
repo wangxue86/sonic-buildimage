@@ -34,6 +34,7 @@
 #include <linux/fs.h>
 #include <linux/uaccess.h>
 #include <linux/device.h>
+#include <linux/version.h>
 
 #define DEBUG_VERSION  0
 #define IN
@@ -108,8 +109,12 @@ enum slot_status {
 #define ENABLE      1
 #define DISABLE     0
 
+#ifndef TRUE
 #define TRUE        1
+#endif
+#ifndef FALSE
 #define FALSE       0
+#endif
 
 #define MAIN_BOARD_SLOT_INDEX        -1
 #define MAX_SLOT_NUM                  5                                  

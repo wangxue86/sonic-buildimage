@@ -3552,7 +3552,13 @@ ssize_t bsp_sysfs_debug_i2c_diag(struct kobject *kobjs, struct kobj_attribute *a
     for (i = 0; i < i2c_diag_info.rec_count; i++)
     {
         if (i2c_diag_info.is_valid) {
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,0,0)
             rtc_time_to_tm(i2c_diag_info.record[i].time_sec - timezone_sec_diff, &tm);
+#else
+            rtc_time64_to_tm(i2c_diag_info.record[i].time_sec - timezone_sec_diff, &tm);
+#endif
+         
             printk(KERN_DEBUG"[%04d]%3d  %s  %d   %3d    0x%2x 0x%x 0x%04x %04d/%02d/%02d %02d:%02d:%02d\n", 
                 i, 
                 i2c_diag_info.record[i].error_code,
@@ -4055,7 +4061,11 @@ int bsp_h3c_localmsg_to_file (char *buf, long len, int log_level, const char * s
             char log_str[LOG_STRING_LEN + 64] = {0};
             struct rtc_time tm = {0};
             u64 timezone_sec_diff = sys_tz.tz_minuteswest * 60;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,0,0)
             rtc_time_to_tm(get_seconds() - timezone_sec_diff, &tm);
+#else
+            rtc_time64_to_tm(get_seconds() - timezone_sec_diff, &tm);
+#endif
             len_s = sprintf(log_str, "%04d-%02d-%02d %02d:%02d:%02d %s\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, buf);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,19,0)
             ret = kernel_write (pfile, log_str, len_s, &pos);
