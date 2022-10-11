@@ -1,0 +1,14 @@
+#sonic-platform-h3c
+#
+
+[Unit]
+Description=sonic-platfrom-h3c kernel restore service
+#After=pmon.service
+
+[Service]
+Type=oneshot
+ExecStart=-/bin/bash /usr/local/bin/h3ckoinstall
+
+[Install]
+WantedBy=multi-user.target
+

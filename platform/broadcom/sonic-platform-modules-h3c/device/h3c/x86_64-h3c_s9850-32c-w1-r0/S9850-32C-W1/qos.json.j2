@@ -1,0 +1,263 @@
+{%- macro generate_tc_to_pg_map() %}
+    "TC_TO_PRIORITY_GROUP_MAP": {
+        "TEST": {
+            "0": "0",
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "6": "6",
+            "7": "7"
+        }
+    },
+{%- endmacro %}
+
+{%- macro generate_map_pfc_priority_to_queue() %}
+{% if 'default_rdma_status' in DEVICE_METADATA['localhost'] and DEVICE_METADATA['localhost']['default_rdma_status'] == 'enable' %}
+    "MAP_PFC_PRIORITY_TO_QUEUE": {
+        "TEST": {
+            "0": "0",
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "6": "6",
+            "7": "7"
+        }
+    },
+{% endif %}
+{%- endmacro %}
+
+{%- macro generate_tc_to_queue_map() %}
+    "TC_TO_QUEUE_MAP": {
+        "TEST": {
+            "0": "2",
+            "1": "0",
+            "2": "1",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "6": "6",
+            "7": "7"
+        }
+    },
+{%- endmacro %}
+
+{%- macro generate_dscp_to_tc_map() %}
+    "DSCP_TO_TC_MAP": {
+        "TEST": {
+            "0" : "0",
+            "1" : "0",
+            "2" : "0",
+            "3" : "2",
+            "4" : "3",
+            "5" : "2",
+            "6" : "0",
+            "7" : "0",
+            "8" : "0",
+            "9" : "0",
+            "10": "0",
+            "11": "2",
+            "12": "3",
+            "13": "2",
+            "14": "0",
+            "15": "0",
+            "16": "0",
+            "17": "0",
+            "18": "0",
+            "19": "2",
+            "20": "3",
+            "21": "2",
+            "22": "0",
+            "23": "0",
+            "24": "0",
+            "25": "0",
+            "26": "0",
+            "27": "2",
+            "28": "3",
+            "29": "2",
+            "30": "0",
+            "31": "0",
+            "32": "0",
+            "33": "0",
+            "34": "0",
+            "35": "2",
+            "36": "3",
+            "37": "2",
+            "38": "0",
+            "39": "0",
+            "40": "0",
+            "41": "0",
+            "42": "0",
+            "43": "2",
+            "44": "3",
+            "45": "2",
+            "46": "0",
+            "47": "0",
+            "48": "0",
+            "49": "0",
+            "50": "0",
+            "51": "1",
+            "52": "4",
+            "53": "2",
+            "54": "0",
+            "55": "0",
+            "56": "0",
+            "57": "0",
+            "58": "0",
+            "59": "5",
+            "60": "6",
+            "61": "2",
+            "62": "0",
+            "63": "0"
+        }
+    },
+{%- endmacro %}
+
+{%- macro generate_scheduler() %}
+    "SCHEDULER": {
+        "scheduler.0": {
+            "type"  : "DWRR",
+            "weight": "1"
+        },
+        "scheduler.1": {
+            "type"  : "DWRR",
+{% if 'default_rdma_status' in DEVICE_METADATA['localhost'] and DEVICE_METADATA['localhost']['default_rdma_status'] == 'enable' %}
+            "weight": "20"
+{% else %}
+            "weight": "3"
+{% endif %}
+        },
+        "scheduler.2": {
+            "type"  : "DWRR",
+{% if 'default_rdma_status' in DEVICE_METADATA['localhost'] and DEVICE_METADATA['localhost']['default_rdma_status'] == 'enable' %}
+            "weight": "60"
+{% else %}
+            "weight": "15"
+{% endif %}
+        },
+        "scheduler.3": {
+            "type"  : "DWRR",
+{% if 'default_rdma_status' in DEVICE_METADATA['localhost'] and DEVICE_METADATA['localhost']['default_rdma_status'] == 'enable' %}
+            "weight": "17"
+{% else %}
+            "weight": "2"
+{% endif %}
+        },
+{% if 'default_rdma_status' in DEVICE_METADATA['localhost'] and DEVICE_METADATA['localhost']['default_rdma_status'] == 'enable' %}
+        "scheduler.4": {
+            "type"  : "DWRR",
+            "weight": "99"
+        },
+        "scheduler.5": {
+            "type"  : "STRICT"
+        }
+{% else %}
+        "scheduler.4": {
+            "type"  : "STRICT"
+        }
+{% endif %}
+    },
+{%- endmacro %}
+
+{%- macro generate_port_qos_map(PORT_ACTIVE) %}
+    "PORT_QOS_MAP": {
+{% for port in PORT_ACTIVE %}
+        "{{ port }}": {
+{% if 'default_rdma_status' in DEVICE_METADATA['localhost'] and DEVICE_METADATA['localhost']['default_rdma_status'] == 'enable' %}
+            "pfc_to_queue_map": "[MAP_PFC_PRIORITY_TO_QUEUE|TEST]",
+            "pfc_enable"      : "5",
+{% endif %}
+            "dscp_to_tc_map"  : "[DSCP_TO_TC_MAP|TEST]",
+            "tc_to_queue_map" : "[TC_TO_QUEUE_MAP|TEST]",
+            "tc_to_pg_map"    : "[TC_TO_PRIORITY_GROUP_MAP|TEST]"
+        }{% if not loop.last %},{% endif %}
+
+{% endfor %}
+    },
+{%- endmacro %}
+
+{%- macro generate_wred_profile() %}
+{% if 'default_rdma_status' in DEVICE_METADATA['localhost'] and DEVICE_METADATA['localhost']['default_rdma_status'] == 'enable' %}
+    "WRED_PROFILE": {
+        "TEST_LOSSLESS" : {
+            "wred_green_enable"      : "true",
+            "wred_yellow_enable"     : "true",
+            "wred_red_enable"        : "true",
+            "ecn"                    : "ecn_all",
+            "green_max_threshold"    : "819200",
+            "green_min_threshold"    : "51200",
+            "yellow_max_threshold"   : "819200",
+            "yellow_min_threshold"   : "51200",
+            "red_max_threshold"      : "819200",
+            "red_min_threshold"      : "51200",
+            "green_drop_probability" : "10",
+            "yellow_drop_probability": "10",
+            "red_drop_probability"   : "10"
+        }
+    },
+{% endif %}
+{%- endmacro %}
+
+{%- macro generate_queue(PORT_ACTIVE) %}
+    "QUEUE": {
+{% for port in PORT_ACTIVE %}
+        "{{ port }}|0": {
+            "scheduler": "[SCHEDULER|scheduler.0]"
+        },
+{% endfor %}
+{% for port in PORT_ACTIVE %}
+        "{{ port }}|1": {
+            "scheduler": "[SCHEDULER|scheduler.1]"
+        },
+{% endfor %}
+{% for port in PORT_ACTIVE %}
+        "{{ port }}|2": {
+            "scheduler": "[SCHEDULER|scheduler.2]"
+        },
+{% endfor %}
+{% for port in PORT_ACTIVE %}
+        "{{ port }}|3": {
+            "scheduler": "[SCHEDULER|scheduler.3]"
+        },
+{% endfor %}
+{% for port in PORT_ACTIVE %}
+        "{{ port }}|4": {
+            "scheduler": "[SCHEDULER|scheduler.0]"
+        },
+{% endfor %}
+{% for port in PORT_ACTIVE %}
+        "{{ port }}|5": {
+{% if 'default_rdma_status' in DEVICE_METADATA['localhost'] and DEVICE_METADATA['localhost']['default_rdma_status'] == 'enable' %}
+            "scheduler": "[SCHEDULER|scheduler.4]",
+            "wred_profile": "[WRED_PROFILE|TEST_LOSSLESS]"
+{% else %}
+            "scheduler": "[SCHEDULER|scheduler.0]"
+{% endif %}
+        },
+{% endfor %}
+{% for port in PORT_ACTIVE %}
+        "{{ port }}|6": {
+{% if 'default_rdma_status' in DEVICE_METADATA['localhost'] and DEVICE_METADATA['localhost']['default_rdma_status'] == 'enable' %}
+            "scheduler": "[SCHEDULER|scheduler.5]"
+{% else %}
+            "scheduler": "[SCHEDULER|scheduler.4]"
+{% endif %}
+        },
+{% endfor %}
+{% for port in PORT_ACTIVE %}
+        "{{ port }}|7": {
+{% if 'default_rdma_status' in DEVICE_METADATA['localhost'] and DEVICE_METADATA['localhost']['default_rdma_status'] == 'enable' %}
+            "scheduler": "[SCHEDULER|scheduler.5]"
+{% else %}
+            "scheduler": "[SCHEDULER|scheduler.4]"
+{% endif %}
+        }{% if not loop.last %},{% endif %}
+
+{% endfor %}
+    }
+{%- endmacro %}
+
+{%- include 'qos_config.j2' %}

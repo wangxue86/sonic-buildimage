@@ -1,0 +1,90 @@
+#!/bin/bash
+
+install_driver () {
+	EXPKVER=$(uname -r)
+	KVER=$(uname -r)
+
+
+	MODPATH=/lib/modules/$KVER/extra
+	echo "Module path: $MODPATH"
+	pushd "$MODPATH"
+		MYMODS="bsp_base syseeprom psu sensor fan cpld xcvr sysled  watchdog optoe"
+   
+		#find and reverse the mods to be removed
+		for m in $MYMODS
+		do
+			if [ ! -z "$(lsmod | grep ${m})" ]; then
+				RMMODS="$m $RMMODS"
+			fi
+		done
+
+		if [ ! -z "$RMMODS" ];
+		then
+			echo "Removing old kernel modules: $RMMODS"
+			for m in $RMMODS
+			do
+				echo "  Removing $m"
+				rmmod "${m}"
+			done
+		fi
+
+		echo "Installing kernel modules"
+		for m in $MYMODS
+		do
+			echo "  Inserting $m"
+			insmod "${m}.ko"
+		done
+		logger "bsp driver installed"
+	popd
+	if [ -f /sys/switch/xcvr/power_on ]
+	then
+		echo 1 > /sys/switch/xcvr/power_on
+	fi
+    if [ -f /usr/local/bin/optoe.py ]
+    then
+        python3 /usr/local/bin/optoe.py install
+    fi
+}
+
+
+rename_mgmt_port_to_eth0 () {
+
+        #MGMT_PCI_BUS_NO=`lspci | grep "Gigabit Network Connection" | sed 's/ /\n/g' | sed -n '1p'`
+        MGMT_CURR_ETH="eth1"
+                                             
+        if [ $MGMT_CURR_ETH != 'eth0' ]; then
+                ifconfig $MGMT_CURR_ETH down
+                ifconfig eth0 down
+                ip link set eth0 name eth4
+                ip link set $MGMT_CURR_ETH name eth0
+                ip link set eth4 name $MGMT_CURR_ETH
+                ifconfig eth0 up
+                logger "mgmt $MGMT_CURR_ETH is renamed to eth0"
+        else
+                logger "mgmt is current at eth0, nothing to do"
+        fi
+}
+
+
+install_ipmitool () {
+        #sudo modprobe ipmi_watchdog
+        sudo modprobe ipmi_poweroff
+        sudo modprobe ipmi_devintf
+        sudo modprobe ipmi_si
+        sudo modprobe ipmi_msghandler
+        sleep 1
+        sudo ipmitool mc watchdog off
+}
+
+generate_pcie_yaml () {
+        echo y | sudo pcieutil generate
+        logger "pcie configuration file generated."   
+}
+
+install_driver
+
+rename_mgmt_port_to_eth0
+
+#install_ipmitool
+
+#generate_pcie_yaml
