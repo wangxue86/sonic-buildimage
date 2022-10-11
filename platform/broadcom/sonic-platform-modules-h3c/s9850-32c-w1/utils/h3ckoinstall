@@ -8,7 +8,7 @@ install_driver () {
 	MODPATH=/lib/modules/$KVER/extra
 	echo "Module path: $MODPATH"
 	pushd "$MODPATH"
-		MYMODS="bsp_base syseeprom psu sensor fan cpld xcvr sysled  watchdog optoe"
+		MYMODS="bsp_base syseeprom psu sensor fan cpld xcvr sysled  watchdog"
    
 		#find and reverse the mods to be removed
 		for m in $MYMODS
@@ -40,10 +40,10 @@ install_driver () {
 	then
 		echo 1 > /sys/switch/xcvr/power_on
 	fi
-    if [ -f /usr/local/bin/optoe.py ]
-    then
-        python3 /usr/local/bin/optoe.py install
-    fi
+    #if [ -f /usr/local/bin/optoe.py ]
+    #then
+    #    python3 /usr/local/bin/optoe.py install
+    #fi
 }
 
 
