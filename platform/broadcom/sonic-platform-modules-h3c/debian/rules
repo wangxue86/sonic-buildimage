@@ -20,7 +20,7 @@ PACKAGE_PRE_NAME := platform-modules-h3c
 KVERSION   ?= $(shell uname -r)
 KERNEL_SRC :=  /lib/modules/$(KVERSION)
 MOD_SRC_DIR:= $(shell pwd)
-MODULE_DIRS := s6850-48y8c-w1
+MODULE_DIRS := s6850-48y8c-w1 s9850-32c-w1
 
 MODULE_DIR_COMMON := common
 MODULE_DIR := modules

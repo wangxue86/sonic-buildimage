@@ -9,3 +9,8 @@ Package: platform-modules-h3c-s6850-48y8c-w1
 Architecture: amd64
 Description: kernel modules for platform devices such as fan, led, sfp
 
+Package: platform-modules-h3c-s9850-32c-w1
+Architecture: amd64
+Description: kernel modules for platform devices such as fan, led, sfp
+
+
