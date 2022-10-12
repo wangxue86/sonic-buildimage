@@ -1,115 +1,53 @@
+os=unix
 
 
-## Firmware
-linkscan_led_fw_path=/usr/share/brcm-firmware/sdk/6.5.19/cmicfw/linkscan_led_fw.bin
-cancun_fw_dir=/usr/share/brcm-firmware/sdk/6.5.19/bcm56870_a0/cancun/b870.6.3.3/
-sai_load_hw_config=1
 
-### Vendor LED firmware
-custom_led_fw_path=/usr/share/sonic/hwsku/custom_led.bin
+#UFT
+l2_mem_entries=0x4000
+l3_mem_entries=16384
+fpem_mem_entries=16384
 
-## UFT
-#l2_mem_entries=32768
-l3_mem_entries=49152
-fpem_mem_entries=0
-
-## L2
+#L2
 l2xmsg_mode=0
-l2xmsg_shadow_hit_bits=0
 
-## L3
+#L3
 l3_max_ecmp_mode=1
-# set l3_alpm_enable=2 to use Combined-Mode
 l3_alpm_enable=2
-alpm_dist_hit_interval_us=3000000
-ipv6_lpm_128b_enable=1
-num_ipv6_lpm_128b_entries=5120
-multi_hash_recurse_depth_l3=2
+
+
 
 ## MMU
 mmu_lossless=0
-mmu_config_override=0
-buf.prigroup.guarantee=0
-buf.prigroup.device_headroom_enable=1
-buf.prigroup.pool_resume=2048B
-buf.prigroup.pool_limit=140000
-buf.prigroup.port_guarantee_enable=1
-buf.prigroup.port_max_enable=1
-buf.prigroup.flow_control_enable=0
-buf.queue.pool_scale=8
-buf.mqueue.pool_scale=0.125
-buf.mqueue.pool_scale_cpu=0
-buf.map.pri.prigroup=0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,7
-buf.queue.qgroup_guarantee_enable=0
-buf.queue.guarantee=2048B
-buf.mqueue.guarantee=2048B
 
-## IFA & MOD
-ifa_image_path=/usr/share/brcm-firmware/sdk/6.5.19/bcm56870_a0/BCM56870_1_ifa2.srec
-ifa_enable=1
-ifa_rx_pkt_max_length=9216
 
-mod_image_path=/usr/share/brcm-firmware/sdk/6.5.19/bcm56870_a0/BCM56870_0_mod.srec
-flow_init_mode=1
-num_queues_pci=45
-num_queues_uc0=2
-num_queues_uc1=1
-flowtracker_enable=2
-flowtracker_drop_monitor_enable=1
-flowtracker_max_flows=48000
-flowtracker_export_interval_usecs=10000000
-flowtracker_max_export_pkt_length=9000
-telemetry_max_ports_monitor=128
-
-## MISC
+parity_enable=1
 bcm_stat_interval=1000000
 cdma_timeout_usec=3000000
 
-ptp_ts_pll_fref=0
-
-help_cli_enable=1
-memlist_enable=1
-reglist_enable=1
 
 bcm_num_cos=8
 core_clock_frequency=1525
 dpp_clock_ratio=2:3
+#must add this line, otherwise init fail
 ifp_inports_support_enable=1
 mem_cache_enable=0
 miim_intr_enable=0
 module_64ports=1
 schan_intr_enable=0
+
+#this is a emportant config
 stable_size=0x5500000
 tdma_timeout_usec=3000000
-
-parity_enable=1
-parity_correction=1
+mmu_init_config="TD3-BD"
 
 ## PORT
-### PORT universal config
+
 port_flex_enable=1
 oversubscribe_mode=1
 
-#pbmp_xport_xe=0x000000cf878787f8780888e2202021fe1e1e3fe
-#pbmp_oversubscribe=0x000000cf878787f8780888e2202021fe1e1e3fe  
-
-
-# loopback
-#tencent given loopback
-#portmap_9=9:25
-#portmap_75=73:25
-#serdes_if_type.port10.0=11
-#serdes_if_type.port76.0=11
-
-# mgmt to cpu
-#portmap_66=129:1:m  
-#portmap_130=128:1:m
-#port_init_autoneg.port67.0=1
-#port_init_autoneg.port131.0=1
-
 pbmp_xport_xe=0x0000000000000000000000000000000c888888888888888e2222222222222222
 pbmp_oversubscribe=0x0000000000000000000000000000000c888888888888888e2222222222222222
-#100Ge Port
+
 portmap_1=1:100
 portmap_5=5:100
 portmap_9=9:100
@@ -143,6 +81,7 @@ portmap_119=117:100
 portmap_123=121:100
 portmap_127=125:100
 
+#remap
 dport_map_port_1=1
 dport_map_port_5=2
 dport_map_port_9=3
@@ -175,9 +114,6 @@ dport_map_port_119=29
 dport_map_port_115=30
 dport_map_port_127=31
 dport_map_port_123=32
-#10GE Port
-portmap_65=130:10
-portmap_131=131:10
 
 phy_chain_rx_lane_map_physical{1.0}=0x3120
 phy_chain_tx_lane_map_physical{1.0}=0x0213
@@ -531,76 +467,4 @@ phy_chain_tx_polarity_flip_physical{127.0}=0x1
 phy_chain_rx_polarity_flip_physical{127.0}=0x1
 phy_chain_tx_polarity_flip_physical{128.0}=0x0
 phy_chain_rx_polarity_flip_physical{128.0}=0x0
-
-
-#
-
-serdes_fiber_pref.port2.0=0x0
-serdes_fiber_pref.port6.0=0x0
-serdes_fiber_pref.port10.0=0x0
-serdes_fiber_pref.port14.0=0x0
-serdes_fiber_pref.port18.0=0x0
-serdes_fiber_pref.port22.0=0x0
-serdes_fiber_pref.port26.0=0x0
-serdes_fiber_pref.port30.0=0x0
-serdes_fiber_pref.port34.0=0x0
-serdes_fiber_pref.port38.0=0x0
-serdes_fiber_pref.port42.0=0x0
-serdes_fiber_pref.port46.0=0x0
-serdes_fiber_pref.port50.0=0x0
-serdes_fiber_pref.port54.0=0x0
-serdes_fiber_pref.port58.0=0x0
-serdes_fiber_pref.port62.0=0x0
-serdes_fiber_pref.port68.0=0x0
-serdes_fiber_pref.port72.0=0x0
-serdes_fiber_pref.port76.0=0x0
-serdes_fiber_pref.port80.0=0x0
-serdes_fiber_pref.port84.0=0x0
-serdes_fiber_pref.port88.0=0x0
-serdes_fiber_pref.port92.0=0x0
-serdes_fiber_pref.port96.0=0x0
-serdes_fiber_pref.port100.0=0x0
-serdes_fiber_pref.port104.0=0x0
-serdes_fiber_pref.port108.0=0x0
-serdes_fiber_pref.port112.0=0x0
-serdes_fiber_pref.port116.0=0x0
-serdes_fiber_pref.port120.0=0x0
-serdes_fiber_pref.port124.0=0x0
-serdes_fiber_pref.port128.0=0x0
-
-
-#
-serdes_if_type.port2.0=12
-serdes_if_type.port6.0=12
-serdes_if_type.port10.0=12
-serdes_if_type.port14.0=12
-serdes_if_type.port18.0=12
-serdes_if_type.port22.0=12
-serdes_if_type.port26.0=12
-serdes_if_type.port30.0=12
-serdes_if_type.port34.0=12
-serdes_if_type.port38.0=12
-serdes_if_type.port42.0=12
-serdes_if_type.port46.0=12
-serdes_if_type.port50.0=12
-serdes_if_type.port54.0=12
-serdes_if_type.port58.0=12
-serdes_if_type.port62.0=12
-serdes_if_type.port68.0=12
-serdes_if_type.port72.0=12
-serdes_if_type.port76.0=12
-serdes_if_type.port80.0=12
-serdes_if_type.port84.0=12
-serdes_if_type.port88.0=12
-serdes_if_type.port92.0=12
-serdes_if_type.port96.0=12
-serdes_if_type.port100.0=12
-serdes_if_type.port104.0=12
-serdes_if_type.port108.0=12
-serdes_if_type.port112.0=12
-serdes_if_type.port116.0=12
-serdes_if_type.port120.0=12
-serdes_if_type.port124.0=12
-serdes_if_type.port128.0=12
-
 

@@ -1,11 +1,6 @@
 os=unix
 
 
-#linkscan_led_fw_path=/usr/share/sonic/hwsku/linkscan_led_fw.bin
-#sai_load_hw_config=1
-
-### Vendor LED firmware
-#custom_led_fw_path=/usr/share/sonic/hwsku/custom_led.bin
 
 #UFT
 l2_mem_entries=0x4000
