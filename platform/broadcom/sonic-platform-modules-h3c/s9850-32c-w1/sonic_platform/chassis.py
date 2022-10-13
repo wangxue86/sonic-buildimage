@@ -91,6 +91,9 @@ class Chassis(ChassisBase):
             self._fan_drawer_list.append(FanDrawer(drawer_index, [self._fan_list[drawer_index]]))
 
         try:
+            if not os.path.exists(self.reboot_cause_cpld_path):
+                time.sleep(5)
+                print("wait 5 sec for %s" %(self.reboot_cause_cpld_path))
             with open(self.reboot_cause_cpld_path, 'r') as fd:
                 rv = fd.read().rstrip('\r\n')
         except Exception as error:
@@ -129,23 +132,23 @@ class Chassis(ChassisBase):
         except Exception as error:
             print("Error: unable to open LAST_REBOOT_CAUSE_PATH file: %s" %(str(error)))
 
-        if not cmp(_rv, str(REBOOT_CAUSE_POWER_LOSS_FLAG)):
+        if _rv == str(REBOOT_CAUSE_POWER_LOSS_FLAG):
             return (self.REBOOT_CAUSE_POWER_LOSS, None)
-        elif not cmp(_rv, str(REBOOT_CAUSE_THERMAL_OVERLOAD_CPU_FLAG)):
+        elif _rv == str(REBOOT_CAUSE_THERMAL_OVERLOAD_CPU_FLAG):
             return (self.REBOOT_CAUSE_THERMAL_OVERLOAD_CPU, None)
-        elif not cmp(_rv, str(REBOOT_CAUSE_THERMAL_OVERLOAD_ASIC_FLAG)):
+        elif _rv == str(REBOOT_CAUSE_THERMAL_OVERLOAD_ASIC_FLAG):
             return (self.REBOOT_CAUSE_THERMAL_OVERLOAD_ASIC, None)
-        elif not cmp(_rv, str(REBOOT_CAUSE_THERMAL_OVERLOAD_OTHER_FLAG)):
+        elif _rv == str(REBOOT_CAUSE_THERMAL_OVERLOAD_OTHER_FLAG):
             return (self.REBOOT_CAUSE_THERMAL_OVERLOAD_OTHER, None)
-        elif not cmp(_rv, str(REBOOT_CAUSE_INSUFFICIENT_FAN_SPEED_FLAG)):
+        elif _rv == str(REBOOT_CAUSE_INSUFFICIENT_FAN_SPEED_FLAG):
             return (self.REBOOT_CAUSE_INSUFFICIENT_FAN_SPEED, None)
-        elif not cmp(_rv, str(REBOOT_CAUSE_WATCHDOG_FLAG)):
+        elif _rv == str(REBOOT_CAUSE_WATCHDOG_FLAG):
             return (self.REBOOT_CAUSE_WATCHDOG, None)
-        elif not cmp(_rv, str(REBOOT_CAUSE_HARDWARE_OTHER_FLAG)):
+        elif _rv == str(REBOOT_CAUSE_HARDWARE_OTHER_FLAG):
             return (self.REBOOT_CAUSE_HARDWARE_OTHER, None)
-        elif not cmp(_rv, str(REBOOT_CAUSE_HARDWARE_OTHER_BOOT_SW_FLAG)):
+        elif _rv == str(REBOOT_CAUSE_HARDWARE_OTHER_BOOT_SW_FLAG):
             return (self.REBOOT_CAUSE_HARDWARE_OTHER, 'SW_BIOS_REBOOT')
-        elif not cmp(_rv, str(REBOOT_CAUSE_HARDWARE_OTHER_BUTTON_FLAG)):
+        elif _rv == str(REBOOT_CAUSE_HARDWARE_OTHER_BUTTON_FLAG):
             return (self.REBOOT_CAUSE_HARDWARE_OTHER, 'PRESS_RESET_BUTTON')
 
         else:

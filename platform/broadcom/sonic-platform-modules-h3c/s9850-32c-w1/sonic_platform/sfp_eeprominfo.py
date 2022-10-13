@@ -16,6 +16,7 @@ from sonic_platform_base.sonic_sfp.sff8436 import sff8436Dom
 # from sonic_platform_base.sonic_sfp.qsfp_dd import qsfp_dd_InterfaceId
 # from sonic_platform_base.sonic_sfp.qsfp_dd import qsfp_dd_Dom
 from abc import ABCMeta, abstractmethod
+from platform import python_version
 
 try:
     from sonic_daemon_base.daemon_base import Logger
@@ -239,8 +240,12 @@ class SfpInfo(SfpBase):
         try:
             if len(raw) == 0:
                 return None
+            version = int(python_version()[0])
             for n in range(0, num):
-                eeprom_raw[n] = hex(ord(raw[n]))[2:].zfill(2)
+                if version >= 3:
+                    eeprom_raw[n] = hex(raw[n])[2:].zfill(2)
+                else:
+                    eeprom_raw[n] = hex(ord(raw[n]))[2:].zfill(2)
         except:
             return None
 

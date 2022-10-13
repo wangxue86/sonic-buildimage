@@ -89,8 +89,29 @@ class Psu(PsuBase):
         Returns:
             A string list, all of the predefined STATUS_LED_COLOR_* strings above
         """
-        # Hardware not supported
-        return False
+        
+        led_status_value = {
+            0: 'Absent',
+            1: 'Green',
+            3: 'Red'
+        }
+        
+        if not self.get_presence():
+            return 'N/A'
+        
+        attr_file = 'led_status'
+        attr_path = self._sysfs_psu_dir + '/' + attr_file
+        led = 0
+        try:
+            with open(attr_path, 'r') as psu_prs:
+                led = int(psu_prs.read())
+        except IOError:
+            return False
+        
+        if led in led_status_value:
+            return led_status_value[led]
+        else:
+            return 'N/A'
 
     def get_presence(self):
         """
@@ -148,9 +169,10 @@ class Psu(PsuBase):
 
         try:
             with open(attr_path, 'r') as voltage:
-                psu_voltage = float(voltage.read().strip('\n'))
+                psu_voltage = float(voltage.read().strip('\n')) / 100
         except IOError:
             return False
+
         return psu_voltage
 
 
@@ -172,9 +194,10 @@ class Psu(PsuBase):
 
         try:
             with open(attr_path, 'r') as current:
-                psu_current = float(current.read())
+                psu_current = float(current.read()) / 100
         except IOError:
             return False
+            
         return psu_current
 
     def get_power(self):
@@ -195,7 +218,7 @@ class Psu(PsuBase):
 
         try:
             with open(attr_path, 'r') as power:
-                psu_power = float(power.read())
+                psu_power = float(power.read()) / 100
         except IOError:
             return False
         return psu_power

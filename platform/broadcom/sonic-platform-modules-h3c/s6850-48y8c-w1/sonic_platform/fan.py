@@ -163,12 +163,12 @@ class Fan(FanBase):
                  to 100 (full speed)
         """
         if self.is_psu_fan:
-            attr_file = 'fan'
+            attr_file = 'fan0/speed'
             attr_path = self.fan_path + attr_file
             try:
                 with open(attr_path, 'r') as speed_psu_fan:
                     speed = float(speed_psu_fan.read().strip('\n'))
-                    speed = int(speed * 100 / 18000)
+                    speed = int(speed / 18000)
                     if speed > 100:
                         speed = 100
                     return speed
@@ -444,7 +444,10 @@ class Fan(FanBase):
             A boolean value, True if device is operating properly, False if not
         """
         if self.is_psu_fan:
-            return bool(self.get_presence())
+            if self.get_speed() < 10 or bool(self.get_presence) is not True:
+                return False
+            else:
+                return True
         status = True
         attr_path0 = self.fan_path +'motor0/motor_speed'
         attr_path1 = self.fan_path +'motor1/motor_speed'
