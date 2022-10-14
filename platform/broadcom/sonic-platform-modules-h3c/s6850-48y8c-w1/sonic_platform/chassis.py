@@ -18,6 +18,7 @@ try:
     from sonic_platform.component import Component
     from sonic_platform.watchdog import Watchdog
     import time
+    impot os
     from sonic_platform.fan_drawer import FanDrawer
 except ImportError as _e:
     raise ImportError(str(_e) + "- required module not found")
@@ -91,6 +92,7 @@ class Chassis(ChassisBase):
             self._fan_drawer_list.append(FanDrawer(drawer_index, [self._fan_list[drawer_index]]))
 
         try:
+            rv = None
             if not os.path.exists(self.reboot_cause_cpld_path):
                 time.sleep(5)
                 print("wait 5 sec for %s" %(self.reboot_cause_cpld_path))
