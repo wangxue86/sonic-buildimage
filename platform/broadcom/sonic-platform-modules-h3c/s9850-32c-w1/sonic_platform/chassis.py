@@ -19,7 +19,7 @@ try:
     from sonic_platform.watchdog import Watchdog
     import time
     from sonic_platform.fan_drawer import FanDrawer
-    impot os
+    import os
 except ImportError as _e:
     raise ImportError(str(_e) + "- required module not found")
 
