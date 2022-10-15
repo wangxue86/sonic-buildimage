@@ -82,7 +82,7 @@ generate_pcie_yaml () {
 }
 
 install_s3ip_sysfs () {
-        if [ -f /usr/local/bin/s3ip_load.py]
+        if [ -f /usr/local/bin/s3ip_load.py ]
         then
             python2 /usr/local/bin/s3ip_load.py
         fi
