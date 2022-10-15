@@ -1237,6 +1237,7 @@ int board_static_data_init_S9850_32C_W1 (board_static_data *board_data)
     bd->psu_num         = 2;        
     bd->psu_type        = PSU_TYPE_650W;
     bd->psu_fan_num     = 1;
+    bd->psu_sensor_num  = 1;
     bd->slot_num        = 0;     
     bd->smbus_use_index = 0;     
     bd->lm75_num        = 0;	
