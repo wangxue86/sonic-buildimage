@@ -81,9 +81,18 @@ generate_pcie_yaml () {
         logger "pcie configuration file generated."   
 }
 
+install_s3ip_sysfs () {
+        if [ -f /usr/local/bin/s3ip_load.py]
+        then
+            python2 /usr/local/bin/s3ip_load.py
+        fi
+}
+
 install_driver
 
 rename_mgmt_port_to_eth0
+
+install_s3ip_sysfs
 
 #install_ipmitool
 
