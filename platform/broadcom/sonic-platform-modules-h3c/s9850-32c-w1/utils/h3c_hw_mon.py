@@ -435,14 +435,10 @@ class TD3_hw_monitor(object):
     
     def check_and_enable_port_led(self):
 
-        if os.path.exists(MAC_INIT_OK_FLAG_DIR) and (self.mac_init_ok_set == 0):
+        if (self.mac_init_ok_set == 0):
             os.system("echo 1 > " + PORT_LED_ENABLE_DIR)
             self.mac_init_ok_set = 1
             log_notice("Portled enable is set")
-        elif not os.path.exists(MAC_INIT_OK_FLAG_DIR) and (self.mac_init_ok_set == 1):
-            os.system("echo 0 > " + PORT_LED_ENABLE_DIR)
-            self.mac_init_ok_set = 0
-            log_notice("Port led enable is unset")
         else:
             pass
                 
