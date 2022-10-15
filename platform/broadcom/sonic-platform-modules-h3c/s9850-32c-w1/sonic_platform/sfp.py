@@ -49,16 +49,15 @@ class Sfp(SfpInfo):
 
 
         sfp_base_path = '/sys/switch/xcvr/Eth{0}GE{1}/'
-        eeprom_path = "/sys/class/i2c-adapter/i2c-0/0-{:0>4x}/eeprom"
+        #eeprom_path = "/sys/class/i2c-adapter/i2c-0/0-{:0>4x}/eeprom"
         self._index = index + 1
 
         if self._index < QSFP_START:
             speed = 25
-            i2c_path = eeprom_path.format(1 + 2 * (self._index - 1))
         else:
             speed = 100
-            i2c_path = eeprom_path.format(self._index + 48)
-
+            
+        i2c_path = eeprom_path.format(speed, self._index) + 'eeprom/raw'
         self.sfp_base_path = sfp_base_path.format(speed, self._index)
         super(Sfp, self).__init__(cage_type, i2c_path)
 
