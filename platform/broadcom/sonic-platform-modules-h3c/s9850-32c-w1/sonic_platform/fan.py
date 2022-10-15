@@ -331,7 +331,7 @@ class Fan(FanBase):
         except IOError:
             return False
 
-        return speed_tolerance+5
+        return speed_tolerance + 20
 
 
     def set_speed(self, speed):
