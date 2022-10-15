@@ -4,7 +4,6 @@ try:
     import os
     import sys, getopt
     import subprocess
-    import click
     import imp
     import logging
     import logging.config
