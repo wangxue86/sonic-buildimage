@@ -137,7 +137,7 @@
 
 #if LINUX_VERSION_CODE > KERNEL_VERSION(5,0,0)
 /* i2c_new_dummy is deprecated  after 5.0 */
-#define i2c_new_dummy((adapter),(addr)) i2c_new_dummy_device((adapter),(addr))
+#define i2c_new_dummy(adapter,addr) i2c_new_dummy_device((adapter),(addr))
 #endif
 
 
