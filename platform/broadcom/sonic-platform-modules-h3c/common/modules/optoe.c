@@ -126,6 +126,7 @@
 #include <linux/sysfs.h>
 #include <linux/jiffies.h>
 #include <linux/i2c.h>
+#include <linux/version.h>
 
 #ifdef EEPROM_CLASS
 #include <linux/eeprom_class.h>
