@@ -481,7 +481,7 @@ def get_spot_temp(sensor_type, sensor_index, spot_index):
         elif sensor_type == 'ssd' :
             temp = get_ssd_temp()
 
-    except BaseException, err:
+    except BaseException as err:
         if (time_cnt == ABNORMAL_LOG_TIME):
             log = "Failed to get temperature for %s.%d.%d, set the temperature to 85C for default!" %(sensor_type, sensor_index, spot_index);
             log_notice(log)
@@ -632,10 +632,10 @@ def main(argv):
 
             monitor_dmesg()
 
-        except BaseException, err:
+        except BaseException as err:
             import traceback
             traceback.print_stack()
-            print "ERROR:" + str(err)
+            print("ERROR:" + str(err))
             log_notice(str(err))
 
 
