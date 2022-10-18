@@ -17,7 +17,7 @@ def read_file(path):
 
 def ln_s_pro(s3ip_dir, odm_dir, sysfs_item):
     if "dir" == sysfs_item['type']:
-        if sysfs_item.has_key("number"):
+        if "number" in sysfs_item:
             if "unsure" == sysfs_item["odm_path"] and "eth{}/" == sysfs_item["s3ip_path"]:
                 number = 0
                 for tmp_dir in os.listdir(odm_dir):
@@ -37,7 +37,7 @@ def ln_s_pro(s3ip_dir, odm_dir, sysfs_item):
                         for item in sysfs_item['path']:
                             ln_s_pro(tmp_s3ip_dir, tmp_odm_dir + "/", item)
             else:
-                if sysfs_item.has_key("number_type"):
+                if "number_type" in sysfs_item:
                     if "int" == sysfs_item["number_type"]:
                         number = int(sysfs_item["number"])
                     elif "path" == sysfs_item["number_type"]:

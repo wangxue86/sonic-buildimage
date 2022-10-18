@@ -301,8 +301,12 @@ class Chassis(ChassisBase):
             logger.log_error('syseeprom is not inited.')
             return ''
 
-        e = sys_eeprom.read_eeprom()
-        model = sys_eeprom.manufacture_data_str( e )
+        #e = sys_eeprom.read_eeprom()
+        #model = sys_eeprom.manufacture_data_str( e )
+        model = None
+        with open('/sys/switch/syseeprom/part_number', 'r') as f:
+            model = f.read().strip()
+        
         if model is None:
             logger.log_error('syseeprom model number is error.')
             return ''
