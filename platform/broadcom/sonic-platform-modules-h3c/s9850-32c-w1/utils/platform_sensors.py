@@ -154,8 +154,8 @@ def print_fan_data(fan_number):
         msg += "        sn          : %s\n" % (fan_sn)
         msg += "        hw_version  : %s\n" % (fan_hw_ver)
         msg += "        Speed       :\n"
-        msg += "            speed_front : %s RPM\n" % (fan_speed0)
-        msg += "            speed_rear  : %s RPM\n" % (fan_speed1)
+        msg += "            speed_front : %s RPM\n" % (fan_speed0.strip())
+        msg += "            speed_rear  : %s RPM\n" % (fan_speed1.strip())
         msg += "        status      : OK"
     else:
         msg += '        fan%d : NOT SUPPORT'
