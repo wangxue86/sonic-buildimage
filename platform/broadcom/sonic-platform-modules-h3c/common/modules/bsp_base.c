@@ -3759,11 +3759,7 @@ void bsp_i2c_reset_smbus_host(void)
     int ret = 0;
     u8 temp_value = 0;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5,0,0)
-    struct pci_dev *pdev = pci_get_bus_and_slot(0x00, PCI_DEVFN(0x1f, 0x03));
-#else
     struct pci_dev *pdev = pci_get_domain_bus_and_slot(0x00, 0x00, PCI_DEVFN(0x1f, 0x03));
-#endif
 
     ret = pci_read_config_byte(pdev, 0x40, &temp_value);
     if (ret != ERROR_SUCCESS)
