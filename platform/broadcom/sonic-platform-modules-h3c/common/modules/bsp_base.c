@@ -1,4 +1,5 @@
 #include "bsp_base.h"
+#include <linux/pci.h>
 
 void release_all_kobjs(void);
 
@@ -62,6 +63,9 @@ bool log_to_private_file = TRUE;
 bool log_filter_to_dmesg = TRUE;
 int bsp_dmesg_log_level = DEBUG_ERR;
 static struct h3c_bsp_dbg_info dbg[H3C_SWITCH_RECDBG_LINE_MAX];
+
+
+extern void bsp_i2c_reset_smbus_host(void);
 
 static void bsp_dbg_print (enum DBG_LOG_LEVEL level, const char *info)
 {
@@ -2080,6 +2084,7 @@ int bsp_h3c_i2c_smbus_xfer(struct i2c_adapter *adapter, u16 addr, unsigned short
         } else {
             if (retrys == 1)
             {
+                bsp_i2c_reset_smbus_host();
                 bsp_send_i2c_reset_signal();
                 DBG_ECHO(DEBUG_INFO, "send i2c reset signal, try_count=%d addr=0x%x flags=%d, read_write=%d, command=0x%x", try_count, addr, flags, read_write, command);
             }
@@ -3749,6 +3754,40 @@ int bsp_reset_smbus_slave (int i2c_device_id)
 
     return ERROR_SUCCESS;
 }
+
+
+void bsp_i2c_reset_smbus_host(void)
+{
+    int ret = 0;
+    u8 temp_value = 0;
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,0,0)
+    struct pci_dev *pdev = pci_get_bus_and_slot(0x00, PCI_DEVFN(0x1f, 0x03));
+#else
+    struct pci_dev *pdev = pci_get_domain_bus_and_slot(0x00, 0x00, PCI_DEVFN(0x1f, 0x03));
+#endif
+
+    ret = pci_read_config_byte(pdev, 0x40, &temp_value);
+    if (ret != ERROR_SUCCESS)
+    {
+        DBG_ECHO(DEBUG_ERR, "pci_read_config_byte failed ret=%d", ret);
+        return;
+    }
+
+    temp_value |= 8;
+
+    ret = pci_write_config_byte(pdev, 0x40,temp_value);
+    if (ret != ERROR_SUCCESS)
+    {
+        DBG_ECHO(DEBUG_ERR, "pci_write_config_byte value=%d failed ret=%d", temp_value, ret);
+        return;
+    }
+
+    udelay(1000);
+
+    return;
+}
+
 
 ssize_t bsp_sysfs_reset_smbus_slave_set(struct kobject *kobjs, struct kobj_attribute *attr, const char *buf, size_t count)
 {
