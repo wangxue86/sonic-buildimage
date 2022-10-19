@@ -2082,13 +2082,11 @@ int bsp_h3c_i2c_smbus_xfer(struct i2c_adapter *adapter, u16 addr, unsigned short
         if (ret == ERROR_SUCCESS) {
             break;
         } else {
-            if (retrys == 1)
-            {
-                bsp_i2c_reset_smbus_host();
-                bsp_send_i2c_reset_signal();
-                DBG_ECHO(DEBUG_INFO, "send i2c reset signal, try_count=%d addr=0x%x flags=%d, read_write=%d, command=0x%x", try_count, addr, flags, read_write, command);
-            }
-    
+
+            bsp_i2c_reset_smbus_host();
+            bsp_send_i2c_reset_signal();
+            DBG_ECHO(DEBUG_INFO, "send i2c reset signal, try_count=%d addr=0x%x flags=%d, read_write=%d, command=0x%x", try_count, addr, flags, read_write, command);
+
             msleep (I2C_RW_MAX_RETRY_DELAY_MS);
         }
     }

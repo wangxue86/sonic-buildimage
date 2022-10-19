@@ -57,7 +57,7 @@ class Sfp(SfpInfo):
         else:
             speed = 100
             
-        i2c_path = eeprom_path.format(speed, self._index) + 'eeprom/raw'
+        i2c_path = sfp_base_path.format(speed, self._index) + 'eeprom/'
         self.sfp_base_path = sfp_base_path.format(speed, self._index)
         super(Sfp, self).__init__(cage_type, i2c_path)
 
@@ -69,8 +69,9 @@ class Sfp(SfpInfo):
 
         """
         if A == 2:
-            #eeprom_path = self.i2c_path().replace('0050', '0051')
-            offset += 256
+            eeprom_path = self.i2c_path() + 'dom/dom_raw'
+        else:
+            eeprom_path = self.i2c_path() + 'raw'
 
         return eeprom_path, offset
 
