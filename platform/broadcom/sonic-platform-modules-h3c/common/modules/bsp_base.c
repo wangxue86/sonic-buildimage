@@ -2173,6 +2173,9 @@ int bsp_i2c_common_eeprom_read_bytes (u16 dev_i2c_address, u16 from_inner_addres
         for (i = 0; i < loop_count + 1; i++) {
             temp_read_bytes = (i == loop_count) ? mod : I2C_SMBUS_BLOCK_MAX;
             temp_data.block[0] = temp_read_bytes;
+            
+            if (temp_read_bytes == 0)  /* cause error for 0 length, after kernel 5.0 */
+                break;
     
             retry = EEPROM_RW_MAX_RETRY_COUNT;
             while (retry-- > 0) {

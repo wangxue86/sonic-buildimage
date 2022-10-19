@@ -584,6 +584,7 @@ class SfpInfo(SfpBase):
             'value']
 
         transceiver_info_dict['application_advertisement'] = 'N/A'
+        transceiver_info_dict['vendor_rev'] = sfp_vendor_rev_data['data']['Vendor Rev']['value']
 
         wavelength_raw = xcvr_info_raw[wavelength_offset -
                                        XCVR_INFO_WIDTH:wavelength_offset - XCVR_INFO_WIDTH + XCVR_WAVELENGTH_WIDTH]
