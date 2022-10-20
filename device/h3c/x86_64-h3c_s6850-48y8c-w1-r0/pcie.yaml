@@ -72,12 +72,6 @@
     Root Port #2 (rev d5)'
 - bus: '00'
   dev: 1c
-  fn: '4'
-  id: 8c18
-  name: 'PCI bridge: Intel Corporation 8 Series/C220 Series Chipset Family PCI Express
-    Root Port #5 (rev d5)'
-- bus: '00'
-  dev: 1c
   fn: '6'
   id: 8c1c
   name: 'PCI bridge: Intel Corporation 8 Series/C220 Series Chipset Family PCI Express
@@ -152,17 +146,6 @@
   name: 'Ethernet controller: Intel Corporation I350 Gigabit Network Connection (rev
     01)'
 - bus: 09
-  dev: '00'
-  fn: '0'
-  id: '1150'
-  name: 'PCI bridge: ASPEED Technology, Inc. AST1150 PCI-to-PCI Bridge (rev 04)'
-- bus: 0a
-  dev: '00'
-  fn: '0'
-  id: '2000'
-  name: 'VGA compatible controller: ASPEED Technology, Inc. ASPEED Graphics Family
-    (rev 41)'
-- bus: 0b
   dev: '00'
   fn: '0'
   id: '1531'
