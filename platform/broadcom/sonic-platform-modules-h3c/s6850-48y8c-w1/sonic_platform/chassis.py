@@ -102,6 +102,9 @@ class Chassis(ChassisBase):
             print(("Error: unable to open REBOOT_CAUSE_CPLD_PATH file: %s" %(str(error))))
         reg = "RESET_TYPE_\w+=1\s"
         reason = re.findall(reg, rv)
+        if len(reason) == 0:
+            return
+            
         all_reason = ''.join(reason)
         try:
             with open(self.LAST_REBOOT_CAUSE_PATH, 'w') as fd:
