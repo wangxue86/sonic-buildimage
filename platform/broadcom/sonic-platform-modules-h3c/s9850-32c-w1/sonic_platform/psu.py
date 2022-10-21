@@ -274,6 +274,12 @@ class Psu(PsuBase):
                 psu_product_name = product_name.read().strip('\n')
         except IOError:
             return False
+        
+        psu_keywords = ['0231A0QM','0231AG7X','9803A00Q','9803A08F']
+        psu_sn = self.get_serial()
+        if any(k in psu_sn for k in psu_keywords):
+            psu_product_name = "LSVM1AC650"
+        
         return psu_product_name
 
 

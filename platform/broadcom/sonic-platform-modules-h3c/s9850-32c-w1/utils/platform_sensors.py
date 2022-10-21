@@ -250,7 +250,7 @@ except BaseException as err:
 
 print('\n')
 
-print("Onboard Power Supply Unit Sensors:")
+print("Onboard Power Supply Unit Sensors:")s
 
 try:
     for i in range(0, PSU_NUM):
