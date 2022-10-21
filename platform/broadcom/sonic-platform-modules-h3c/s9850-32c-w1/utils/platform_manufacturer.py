@@ -59,12 +59,12 @@ ver_str1 = matchobj1.group(1) if matchobj1 != None else "Unknown"
 ver_str2 = matchobj2.group(1) if matchobj2 != None else "Unknown"
 ver_str3 = matchobj3.group(1) if matchobj3 != None else "Unknown"
 ver_str4 = matchobj4.group(1) if matchobj4 != None else "Unknown"
-print ""
-print "BIOS:"
-print "    Vendor: " + ver_str3
-print "    Version: " + ver_str1 + "(AMI)"
-print "    Version: " + ver_str2 + "(H3C)"
-print "    Release Date: " + ver_str4
+print("")
+print("BIOS:")
+print("    Vendor: " + ver_str3)
+print("    Version: " + ver_str1 + "(AMI)")
+print("    Version: " + ver_str2 + "(H3C)")
+print("    Release Date: " + ver_str4)
 
 ###### BMC version  ###########################
 r = os.popen("sudo ipmitool mc info | grep Firmware")
@@ -74,11 +74,11 @@ pattern = ": *([^\n]+)"
 matchobj = re.search(pattern, info)
 ver_str = matchobj.group(1) if matchobj != None else "Unknown"
 ###### get BMC version #############
-print ""
-print "BMC:"
-print "    Vendor: H3C"
-print "    Version: " + ver_str
-print "    Device Model: AST2500"
+print("")
+print("BMC:")
+print("    Vendor: H3C")
+print("    Version: " + ver_str)
+print("    Device Model: AST2500")
 
 ###### get Onie version #############
 cmd1 = "cat /host/machine.conf | grep onie_build_date"
@@ -93,10 +93,10 @@ matchobj2 = re.search(pattern, onie_date)
 
 ver_str1 = onie_version.strip()
 ver_str2 = matchobj2.group(1) if matchobj2 != None else "Unknwon"
-print ""
-print "ONIE:"
-print "    Build Date: " + ver_str2
-print "    Version: " + ver_str1
+print("")
+print("ONIE:")
+print("    Build Date: " + ver_str2)
+print("    Version: " + ver_str1)
 
 #Board version
 cpu_cpld_content = get_file_path(DEBUG_CPLD_DIR, "cpu_cpld")
@@ -113,10 +113,10 @@ print("")
 print("BOARD")
 print("    BOARD1:")
 print("        Description: Main Board")
-print("        Hard Version: " + '%s' %((chr(board_version + 65))))
+print(("        Hard Version: " + '%s' %((chr(board_version + 65)))))
 print("    BOARD2:")
 print("        Description: CPU Board")
-print("        Hard Version: " + '%s' %(chr(65 + cpu_version)))
+print(("        Hard Version: " + '%s' %(chr(65 + cpu_version))))
 
 ####### CPU ########################
 cmd1 = "sudo dmidecode --type processor"
@@ -135,10 +135,10 @@ ver_str3 = matchobj3.group(1) if matchobj3 != None else "Unknown"
 ver_str4 = matchobj4.group(1) if matchobj4 != None else "Unknown"
 
 print("CPU:")
-print("    Vendor: " + ver_str1)
-print("    Device Model: " + ver_str2)
-print("    Core Count: " + ver_str3)
-print("    Thread Count: " + ver_str4)
+print(("    Vendor: " + ver_str1))
+print(("    Device Model: " + ver_str2))
+print(("    Core Count: " + ver_str3))
+print(("    Thread Count: " + ver_str4))
 
 
 
@@ -170,11 +170,11 @@ for bank in matchobj:
     ver_str4 = matchobj4.group(1) if matchobj4 != None else "Unknown"
     ver_str5 = matchobj5.group(1) if matchobj5 != None else "Unknown"
 
-    print("    Bank%s:" %(ver_str5) )
-    print("        Description: " + ver_str1)
-    print("        Device Model: " + ver_str2)
-    print("        Vendor: " + ver_str3)
-    print("        Clock: " + ver_str4)
+    print(("    Bank%s:" %(ver_str5) ))
+    print(("        Description: " + ver_str1))
+    print(("        Device Model: " + ver_str2))
+    print(("        Vendor: " + ver_str3))
+    print(("        Clock: " + ver_str4))
     print("        Firmware: NA")
 
 
@@ -195,9 +195,9 @@ ver_str1 = matchobj1.group(1) if matchobj1 != None else "Unknown"
 ver_str2 = matchobj2.group(1) if matchobj2 != None else "Unknown"
 ver_str3 = matchobj3.group(1) if matchobj3 != None else "Unknown"
 
-print("    Device Model: " + ver_str1)
-print("    Firmware Version: " + ver_str2)
-print("    User Capacity:" + ver_str3)
+print(("    Device Model: " + ver_str1))
+print(("    Firmware Version: " + ver_str2))
+print(("    User Capacity:" + ver_str3))
 
 
 ###### get CPLD version #############
@@ -216,17 +216,17 @@ for i in range(0, int(cpld_num)):
     dev_model = get_file_path(Main_board_DIR + "/cpld" + str(i) + "/" , "type")
     vendor    = "Lattice"
     fw_version = get_file_path(Main_board_DIR + "/cpld" + str(i) + "/", "hw_version")
-    print("    CPLD%d:" %(i))
-    print("        Device Model: " + dev_model)
+    print(("    CPLD%d:" %(i)))
+    print(("        Device Model: " + dev_model))
     print("        Vendor: Lattice")
     print("        Description: Main board")
-    print("        Firmware Version: " + fw_version)
+    print(("        Firmware Version: " + fw_version))
 
-print("    CPLD%d:" %(i + 1))
+print(("    CPLD%d:" %(i + 1)))
 print("        Device Model: XO3 6900")
 print("        Vendor: Lattice")
 print("        Description: CPU board" )
-print("        Firmware Version: " + fw2)
+print(("        Firmware Version: " + fw2))
 
 
 ###### get PSU version #############
@@ -242,9 +242,9 @@ for n in range(1, int(psu_num) + 1):
     else:
         hw_ver = "NA"
         fw_ver = "NA"
-    print("    PSU%d:" %n)
-    print("        Hardware Version: %s" %hw_ver)
-    print("        Firmware Version: %s" %fw_ver)
+    print(("    PSU%d:" %n))
+    print(("        Hardware Version: %s" %hw_ver))
+    print(("        Firmware Version: %s" %fw_ver))
 
 ###### get FAN version #############
 print("")
@@ -257,8 +257,8 @@ for n in range(1, int(fan_num) + 1):
         fan_hw_ver = get_file_path(temp_fan_dir, "hw_version").strip()
     else:
         fan_hw_ver = "NA"
-    print("    FAN%d:" %(n))
-    print("        Hardware Version: %s" %(fan_hw_ver))
+    print(("    FAN%d:" %(n)))
+    print(("        Hardware Version: %s" %(fan_hw_ver)))
     print("        Firmware Version: NA")
 
 
@@ -274,18 +274,20 @@ if os.path.exists(SLOT_DIR):
                 slot_version = chr(int(get_file_path(SLOT_ITEM_DIR.format(i), "hw_version")) + 65)
             else:
                 slot_version = "NA"
-            print("    SLOT%d:" %(i))
-            print('        Hard Version: %s' %(slot_version))
+            print(("    SLOT%d:" %(i)))
+            print(('        Hard Version: %s' %(slot_version)))
 
 ###### get I210 firmware version #############
-info = exec_cmd("sudo ip netns exec mgmt ethtool -i eth0")
+info = exec_cmd("sudo ethtool -i eth0")
 pattern = r"firmware-version: *([^\n]+)"
 matchobj = re.search(pattern, info)
-ver_str = matchobj.group(1) if matchobj != None else "Unknown"
-print ""
-print "NIC:"
-print "    Device Model: I350 "
-print "    Vendor: Intel"
-print "    Firmware Version: " + ver_str
+tem=matchobj.group(1).split(",",1)
+#ver_str = matchobj.group(1) if matchobj != None else "Unknown"
+ver_str = tem[0] if matchobj != None else "Unknown"
+print("")
+print("NIC:")
+print("    Device Model: I350 ")
+print("    Vendor: Intel")
+print("    Firmware Version: " + ver_str)
 
 

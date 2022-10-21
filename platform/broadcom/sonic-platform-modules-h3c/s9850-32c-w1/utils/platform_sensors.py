@@ -18,11 +18,14 @@ FAN_NUM = 5
 #PSU2_DIR = "/sys/switch/psu/psu2/"
 
 PSU_DIR = "/sys/switch/psu/psu%d/"
+PSU_TEMP_DIR = "/sys/switch/psu/psu%d/temp0/"
+PSU_FAN_DIR = "/sys/switch/psu/psu%d/fan0/"
 PSU_NUM = 2
 
 SENSOR_DIR = "/sys/switch/sensor/"
 
 CPLD_DIR = "/sys/switch/debug/cpld/buffer"
+last_temp = 0
 
 def get_board_cpld_reg_value(offset_addr):
 
@@ -164,6 +167,8 @@ def print_fan_data(fan_number):
 
 def print_psu_data(psu_number):
     psu_dir = PSU_DIR %(psu_number)
+    psu_temp_dir = PSU_TEMP_DIR % (psu_number)
+    psu_fan_dir = PSU_FAN_DIR % (psu_number)
     psu_status = get_file_path(psu_dir, "status")
     psu_status_int = int(psu_status)
     msg = ""
@@ -180,8 +185,8 @@ def print_psu_data(psu_number):
         psu_in_vol = get_file_path(psu_dir, "in_vol").strip()
         psu_out_current = get_file_path(psu_dir, "out_curr").strip()
         psu_out_vol = get_file_path(psu_dir, "out_vol").strip()
-        psu_temp = get_file_path(psu_dir, "temp_input").strip()
-        psu_fan_speed = get_file_path(psu_dir, "fan").strip()
+        psu_temp = get_file_path(psu_temp_dir, "temp_input").strip()
+        psu_fan_speed = get_file_path(psu_fan_dir, "speed").strip()
         psu_in_power = get_file_path(psu_dir, "in_power").strip()
         psu_out_power = get_file_path(psu_dir, "out_power").strip()
 
@@ -192,18 +197,24 @@ def print_psu_data(psu_number):
         msg += "    psu%d:\n" %(psu_number)
         msg += "        type        : %s\n"   %(psu_product_name).strip()
         msg += "        sn          : %s\n"   %(psu_sn).strip()
-        msg += "        in_current  : %s A\n" %(psu_in_current).strip()
-        msg += "        in_voltage  : %s V\n" %(psu_in_vol)
-        msg += "        out_current : %s A\n" %(psu_out_current)
-        msg += "        out_voltage : %s V\n" %(psu_out_vol)
-        msg += "        temp        : %s C\n" %(psu_temp)
-        msg += "        fan_speed   : %d RPM\n" % (math.floor(float(psu_fan_speed)))
-        msg += "        in_power    : %s W\n" %(psu_in_power)
-        msg += "        out_power   : %s W" % (psu_out_power)
+
+        if psu_product_name.strip() == "LSVM1AC650".strip():
+            msg += "        in_current  : %s A\n" %(psu_in_current).strip()
+            msg += "        in_voltage  : %s V\n" %(psu_in_current).strip()
+        else:
+            msg += "        in_current  : %d.%d A\n" %(int(psu_in_current) / 100, int(psu_in_current) % 100)
+            msg += "        in_voltage  : %d.%d V\n" %(int(psu_in_voltage) / 100, int(psu_in_voltage) % 100)
+
+        msg += "        out_current : %d.%d A\n" %(int(psu_out_current) / 100, int(psu_out_current) % 100)
+        msg += "        out_voltage : %d.%d V\n" %(int(psu_out_vol) / 100, int(psu_out_vol) % 100)
+        msg += "        temp        : %s C\n" %(int(psu_temp) / 100)
+        msg += "        fan_speed   : %d RPM\n" % (math.floor(float(psu_fan_speed)) / 100)
+        msg += "        in_power    : %d.%d W\n" %(int(psu_in_power) / 100, int(psu_in_power) % 100)
+        msg += "        out_power   : %d.%d W" % (int(psu_out_power) / 100, int(psu_out_power) % 100)
     else:
         msg = '    psu%d : NOT SUPPORT' %(psu_number)
         
-    print msg
+    print(msg)
 
 def get_temp_spot_num():
     return int(get_file_path(SENSOR_DIR, "num_temp_sensors"))
@@ -217,8 +228,6 @@ except BaseException as err:
     print("Failed to get sensor data: %s\n" %(str(err)))
 
 print('\n')
-
-
 print("Onboard Temperature Sensors:")
 
 try:

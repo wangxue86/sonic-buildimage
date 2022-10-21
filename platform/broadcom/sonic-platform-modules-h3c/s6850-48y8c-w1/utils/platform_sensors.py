@@ -96,6 +96,10 @@ def print_temp_data(dir, num):
     msg = "        hotspot%d    : %.1f C  (low = %.1f C, high = %.1f C)" % (num, temp_input, temp_min, temp_max)
     print(msg)
 
+def print_mac_temp(num):
+    msg = "        hotspot%d    : %.1f C  (low = %.1f C, high = %.1f C)" % (num, get_mac_temp(), -55, 70)
+    print(msg)
+
 def print_fan_data(fan_number):
     fan_dir = FAN_DIR %(fan_number)
     fan_status = get_file_path(fan_dir, "status")
@@ -151,6 +155,10 @@ def print_psu_data(psu_number):
         psu_in_power = get_file_path(psu_dir, "in_power").strip()
         psu_out_power = get_file_path(psu_dir, "out_power").strip()
 
+        psu_keywords = ['0231A0QM','0231AG7X','9803A00Q','9803A08F']
+        if any(k in psu_sn for k in psu_keywords):
+            psu_product_name = "LSVM1AC650"
+
         msg += "    psu%d:\n" %(psu_number)
         msg += "        type        : %s\n"   %(psu_product_name).strip()
         msg += "        sn          : %s\n"   %(psu_sn).strip()
@@ -178,27 +186,42 @@ def get_temp_spot_num():
 
 
 print("Onboard coretemp Sensors:")
-HWMON1_DIR=find_all_hwmon_paths("coretemp")[0]
-get_coretemp_data(HWMON1_DIR)
+try:
+    HWMON1_DIR=find_all_hwmon_paths("coretemp")[0]
+    get_coretemp_data(HWMON1_DIR)
+except BaseException as err:
+    print("Failed to get sensor data: %s\n" %(str(err)))
+
 print('\n')
 print("Onboard Temperature Sensors:")
-temp_spot_num = get_temp_spot_num()
-for i in range(1, temp_spot_num + 1):
-    print_temp_data(SENSOR_DIR + "temp%d/" %(i), i)
 
+try:
+    temp_spot_num = get_temp_spot_num()
+    for i in range(1, temp_spot_num + 1):
+        print_temp_data(SENSOR_DIR + "temp%d/" %(i), i)
+    #print_mac_temp(i + 1)
+except BaseException as err:
+    print("Failed to get sensor data: %s\n" %(str(err)))
 
 print('\n')
+
 print("Onboard fan Sensors:")
 
-for i in range(0, FAN_NUM):
-    print_fan_data(i + 1)
+try:
+    for i in range(0, FAN_NUM):
+        print_fan_data(i + 1)
+except BaseException as err:
+    print("Failed to get sensor data: %s\n" %(str(err)))
 
 print('\n')
 
 print("Onboard Power Supply Unit Sensors:")
 
-for i in range(0, PSU_NUM):
-    print_psu_data(i + 1)
+try:
+    for i in range(0, PSU_NUM):
+        print_psu_data(i + 1)
+except BaseException as err:
+    print("Failed to get sensor data: %s\n" %(str(err)))
 
 print('\n')
 
