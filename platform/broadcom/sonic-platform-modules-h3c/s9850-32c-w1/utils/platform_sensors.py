@@ -34,7 +34,7 @@ def get_board_cpld_reg_value(offset_addr):
     cpld_file = open(CPLD_DIR, "w")
     cpld_file.write("brd_read_0x%x" %(offset_addr))
     cpld_file.close()
-    cpld_file = open(CPLD_DIR, "r")
+    cpld_file = open(CPLD_DIR, "rb")
     cpld_value = cpld_file.read()
     cpld_file.close()
     
@@ -250,7 +250,7 @@ except BaseException as err:
 
 print('\n')
 
-print("Onboard Power Supply Unit Sensors:")s
+print("Onboard Power Supply Unit Sensors:")
 
 try:
     for i in range(0, PSU_NUM):
