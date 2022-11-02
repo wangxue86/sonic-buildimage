@@ -4179,6 +4179,7 @@ static int __init bsp_init(void)
     int pdt_type = PDT_TYPE_BUTT;
     board_static_data *bd = bsp_get_board_data();
 
+    mutex_init(&h3c_dbg_lock);
     bsp_h3c_localmsg_init();
     CHECK_IF_ERROR_GOTO_EXIT(ret=bsp_get_product_type(&pdt_type), "bsp get product type failed!");
     

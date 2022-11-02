@@ -16,7 +16,12 @@ from sonic_platform_base.sonic_sfp.sff8436 import sff8436Dom
 # from sonic_platform_base.sonic_sfp.qsfp_dd import qsfp_dd_InterfaceId
 # from sonic_platform_base.sonic_sfp.qsfp_dd import qsfp_dd_Dom
 from abc import ABCMeta, abstractmethod
-from platform import python_version
+try:
+    from platform import python_version
+except ImportError as e:
+    #python_version is not supported in python2
+    def python_version():
+	    return [2,0,0]
 
 try:
     from sonic_daemon_base.daemon_base import Logger

@@ -18,10 +18,16 @@ try:
     from sonic_platform.component import Component
     from sonic_platform.watchdog import Watchdog
     import time
-    from sonic_platform.fan_drawer import FanDrawer
     import os
+    
 except ImportError as _e:
     raise ImportError(str(_e) + "- required module not found")
+
+try:
+    from sonic_platform.fan_drawer import FanDrawer
+	FAN_DRAWER_LIST = list(range(0, 5))
+except ImportError as e:
+    FAN_DRAWER_LIST = []
 
 try:
     from sonic_daemon_base.daemon_base import Logger
@@ -31,7 +37,6 @@ except ImportError as e2:
     raise ImportError(str(e2) + " required module not found")
 
 #one drawer for each fan
-FAN_DRAWER_LIST = list(range(0, 5))
 FAN_LIST       = list(range(0, 5))
 PSU_LIST       = list(range(0, 2))
 THERMAL_LIST   = list(range(0, 7))
@@ -92,6 +97,7 @@ class Chassis(ChassisBase):
             self._fan_drawer_list.append(FanDrawer(drawer_index, [self._fan_list[drawer_index]]))
 
         try:
+            rv = None
             if not os.path.exists(self.reboot_cause_cpld_path):
                 time.sleep(5)
                 print("wait 5 sec for %s" %(self.reboot_cause_cpld_path))
@@ -107,8 +113,8 @@ class Chassis(ChassisBase):
         all_reason = ''.join(reason)
         try:
             with open(self.LAST_REBOOT_CAUSE_PATH, 'w') as fd:
-			    if len(reason) == 0:
-				    fd.write(str(REBOOT_CAUSE_NON_HARDWARE_FLAG))
+                if len(reason) == 0:
+                    fd.write(str(REBOOT_CAUSE_NON_HARDWARE_FLAG))
                 if "RESET_TYPE_COLD" in all_reason:
                     fd.write(str(REBOOT_CAUSE_POWER_LOSS_FLAG))
                 elif "RESET_TYPE_WDT" in all_reason:

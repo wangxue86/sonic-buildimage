@@ -77,10 +77,11 @@ class SfpUtil(SfpUtilBase):
         for x in range(self.port_start, self.port_end+1):
             speed = 25 if x < self.QSFP_PORT_START else 100
             self._port_base_path[x] = self.BASE_VAL_PATH.format(speed, x)
-            self._port_optoe_base_path[x] = self.BASE_OPTOE_PATH.format(1+2*(x-1)) if x < self.QSFP_PORT_START else self.BASE_OPTOE_PATH.format(x+48)
-            self.port_to_eeprom_mapping[x] = self._port_optoe_base_path[x] + "eeprom"
-            self._port_to_eeprom_dom_mapping[x] = self._port_optoe_base_path[x] + "eeprom"            
-        self.last_bitmap = 0
+            #self._port_optoe_base_path[x] = self.BASE_OPTOE_PATH.format(1+2*(x-1)) if x < self.QSFP_PORT_START else self.BASE_OPTOE_PATH.format(x+48)
+            self.port_to_eeprom_mapping[x] = self._port_base_path[x] + "eeprom/raw"
+            self._port_to_eeprom_dom_mapping[x] = self._port_base_path[x] + "eeprom/dom/dom_raw"
+            
+
         SfpUtilBase.__init__(self)
 
 
