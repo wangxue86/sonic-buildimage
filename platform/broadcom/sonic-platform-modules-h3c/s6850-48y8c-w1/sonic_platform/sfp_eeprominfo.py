@@ -354,8 +354,10 @@ class SfpInfo(SfpBase):
             if qsfp_version_compliance_raw is None:
                 return None
             qsfp_version_compliance = int(qsfp_version_compliance_raw[0], 16)
-            dom_capability = sfpi_obj.parse_dom_capability(qsfp_dom_capability_raw, 0)
-
+            if 'parse_dom_capability' in dir(sfpi_obj):
+			    dom_capability = sfpi_obj.parse_dom_capability(qsfp_dom_capability_raw, 0)
+            else:
+			    return None
             if qsfp_version_compliance >= 0x08:
                 self._dom_temp_supported = dom_capability['data']['Temp_support']['value'] == 'On'
                 self._dom_volt_supported = dom_capability['data']['Voltage_support']['value'] == 'On'
