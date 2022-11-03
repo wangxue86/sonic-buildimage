@@ -175,7 +175,7 @@ static ssize_t bsp_sysfs_max6696_set_attr(struct device *kobjs, struct device_at
     MAX6696_LIMIT_INDEX limit_index = -1;
     int max6696_index = -1;
     int found_match = 0;
-    int rv = 0;
+    //int rv = 0;
     struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
     board_static_data * bd = bsp_get_board_data();
 	

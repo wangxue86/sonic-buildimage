@@ -59,7 +59,7 @@ struct i2c_diag_records i2c_diag_info = {0};
 struct bsp_log_filter bsp_recent_log;
 
 int current_i2c_path_id = 0;
-bool log_to_private_file = TRUE;
+bool log_to_private_file = FALSE;
 bool log_filter_to_dmesg = TRUE;
 int bsp_dmesg_log_level = DEBUG_ERR;
 static struct h3c_bsp_dbg_info dbg[H3C_SWITCH_RECDBG_LINE_MAX];
@@ -137,7 +137,7 @@ int h3c_bsp_dbg_print (u32 line, char *file, char *func, enum DBG_LOG_LEVEL leve
 
     if (DEBUG_DBG != level) {
         for (i = 0; i < H3C_SWITCH_RECDBG_LINE_MAX; i++) {
-            if (line == dbg[i].line) {
+            if (line == dbg[i].line && log_filter_to_dmesg == 1) {
                 return 0;}
         }
 
@@ -2404,6 +2404,7 @@ int bsp_i2c_Max6696_limit_rw(REG_RW read_write, u16 dev_i2c_address, MAX6696_LIM
         inner_addr = REG_ADDR_MAX6696_READ_ALERT_LO_LOCAL; 
         break;
     case MAX6696_LOCAL_OT2_LIMIT:  
+    case SET_MAX6696_LOCAL_OT2_LIMIT:
         inner_addr = REG_ADDR_MAX6696_RW_OT2_LOCAL; 
         break;
     case MAX6696_REMOTE_CHANNEL1_HIGH_ALERT: 
@@ -2419,8 +2420,12 @@ int bsp_i2c_Max6696_limit_rw(REG_RW read_write, u16 dev_i2c_address, MAX6696_LIM
         break;
     case MAX6696_REMOTE_CHANNEL1_OT2_LIMIT:
     case MAX6696_REMOTE_CHANNEL2_OT2_LIMIT:
-        select_channel = (limit_index == MAX6696_REMOTE_CHANNEL1_OT2_LIMIT) ? MAX6696_REMOTE_CHANNEL1_SOPT_INDEX : MAX6696_REMOTE_CHANNEL2_SOPT_INDEX;
-        inner_addr = REG_ADDR_MAX6696_RW_OT2_REMOTE; 
+    case SET_MAX6696_REMOTE_CHANNEL1_OT2_LIMIT:
+    case SET_MAX6696_REMOTE_CHANNEL2_OT2_LIMIT:
+        //select_channel = (limit_index == MAX6696_REMOTE_CHANNEL1_OT2_LIMIT) ? MAX6696_REMOTE_CHANNEL1_SOPT_INDEX : MAX6696_REMOTE_CHANNEL2_SOPT_INDEX;
+        select_channel = ((limit_index == MAX6696_REMOTE_CHANNEL1_OT2_LIMIT) || (limit_index == SET_MAX6696_REMOTE_CHANNEL1_OT2_LIMIT)) ? MAX6696_REMOTE_CHANNEL1_SOPT_INDEX : MAX6696_REMOTE_CHANNEL2_SOPT_INDEX;
+            
+		inner_addr = REG_ADDR_MAX6696_RW_OT2_REMOTE; 
         break;
     case SET_MAX6696_LOCAL_HIGH_ALERT: 
 	    inner_addr = REG_ADDR_MAX6696_WRITE_ALERT_HI_LOCAL; 
@@ -2428,6 +2433,18 @@ int bsp_i2c_Max6696_limit_rw(REG_RW read_write, u16 dev_i2c_address, MAX6696_LIM
     case SET_MAX6696_LOCAL_LOW_ALERT:  
 	    inner_addr = REG_ADDR_MAX6696_WRITE_ALERT_LO_LOCAL; 
 		break;
+    case SET_MAX6696_REMOTE_CHANNEL1_HIGH_ALERT:
+	case SET_MAX6696_REMOTE_CHANNEL2_HIGH_ALERT:
+        select_channel = (limit_index == SET_MAX6696_REMOTE_CHANNEL1_HIGH_ALERT) ? MAX6696_REMOTE_CHANNEL1_SOPT_INDEX : MAX6696_REMOTE_CHANNEL2_SOPT_INDEX;
+        inner_addr = REG_ADDR_MAX6696_WRITE_ALERT_HI_REMOTE;
+        break;
+    
+    case SET_MAX6696_REMOTE_CHANNEL1_LOW_ALERT:
+    case SET_MAX6696_REMOTE_CHANNEL2_LOW_ALERT:
+    
+        select_channel = (limit_index == SET_MAX6696_REMOTE_CHANNEL1_LOW_ALERT) ? MAX6696_REMOTE_CHANNEL1_SOPT_INDEX : MAX6696_REMOTE_CHANNEL2_SOPT_INDEX;
+        inner_addr = REG_ADDR_MAX6696_WRITE_ALERT_LO_REMOTE;
+        break;
     default:
         status = ERROR_FAILED;
         CHECK_IF_ERROR_GOTO_EXIT(status, "not support limit index %d", limit_index);

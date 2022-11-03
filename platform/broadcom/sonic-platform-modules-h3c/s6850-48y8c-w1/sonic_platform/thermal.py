@@ -65,32 +65,57 @@ class Thermal(ThermalBase):
     """ Platform-specific Thermal class"""
     THERMAL_NAME = ('DeviceEnv', 'ASIC_Front', 'ASIC_Back',
                     'CPU Core 0', 'CPU Core 1', 'CPU Core 2', 'CPU Core 3')
+    def __init_dir__(self, hwm_mon_alias, hwmon_temp_index):
+         self.thermal_sensor_dir = find_all_hwmon_paths(hwm_mon_alias)
+         self.thermal_status_file = \
+             self.thermal_sensor_dir + "temp{}_alarm".format(hwmon_temp_index)
+         self.thermal_temperature_file = \
+             self.thermal_sensor_dir + "temp{}_input".format(hwmon_temp_index)
+         self.thermal_high_threshold_file = \
+             self.thermal_sensor_dir + "temp{}_max".format(hwmon_temp_index)
+         self.thermal_low_threshold_file = \
+             self.thermal_sensor_dir + "temp{}_min".format(hwmon_temp_index)
+         self.thermal_high_crit__file = \
+             self.thermal_sensor_dir + "temp{}_crit".format(hwmon_temp_index)
+
 
     def __init__(self, thermal_index):
         self.index = thermal_index
         self.is_cpu_thermal = False
+        self.is_mac_thermal = False
         self.name = self.THERMAL_NAME[self.index]
         super(Thermal, self).__init__()
+
+
 
         if self.index < 3:
             hwmon_temp_index = self.index + 1
             hwm_mon_alias = 'Max6696'
+            self.is_6696_thermal = True
+            self.hwmon_temp_index = self.index + 1
+            #self.thermal_sensor_dir = find_all_hwmon_paths(hwm_mon_alias)
+            self.__init_dir__(hwm_mon_alias, hwmon_temp_index)
+            if self.index == 0:
+                self.set_low_threshold(0)
+                self.set_high_threshold(68)
+                self.set_high_critical_threshold(73)
+            elif self.index == 1:
+                self.set_low_threshold(0)
+                self.set_high_threshold(75)
+                self.set_high_critical_threshold(89)
+            elif self.index == 2:
+                self.set_low_threshold(0)
+                self.set_high_threshold(88)
+                self.set_high_critical_threshold(102)
+            else:
+                pass
+
+
         else:
             hwmon_temp_index = self.index - 1
             hwm_mon_alias = 'coretemp'
             self.is_cpu_thermal = True
-
-        self.thermal_sensor_dir = find_all_hwmon_paths(hwm_mon_alias)
-        self.thermal_status_file = \
-            self.thermal_sensor_dir + "temp{}_alarm".format(hwmon_temp_index)
-        self.thermal_temperature_file = \
-            self.thermal_sensor_dir + "temp{}_input".format(hwmon_temp_index)
-        self.thermal_high_threshold_file = \
-            self.thermal_sensor_dir + "temp{}_max".format(hwmon_temp_index)
-        self.thermal_low_threshold_file = \
-            self.thermal_sensor_dir + "temp{}_min".format(hwmon_temp_index)
-        self.thermal_high_crit__file = \
-            self.thermal_sensor_dir + "temp{}_crit".format(hwmon_temp_index)
+            self.__init_dir__(hwm_mon_alias, hwmon_temp_index)
 
         self._old_presence = self.get_presence()
         self._old_status = self.get_status()
@@ -249,6 +274,35 @@ class Thermal(ThermalBase):
             up to nearest thousandth of one degree Celsius, e.g. 30.125
         """
         return 'NA'
+
+    def set_high_critical_threshold(self, temperature):
+        """
+        Sets the high critical threshold temperature of thermal
+        Args :
+        temperature: A float number up to nearest thousandth of one
+        degree Celsius, e.g. 30.125
+        Returns:
+        A boolean, True if threshold is set successfully, False if
+        not
+        """
+        if temperature > 127 or temperature < -127:
+            print "The temperature out of range"
+            return False
+
+        if self.is_mac_thermal or self.is_cpu_thermal:
+            temperature = temperature * 1000
+            self.crit_threshold = temperature
+            return True
+        elif self.is_6696_thermal:
+            sysfile = self.thermal_sensor_dir + "temp{}_crit".format(self.hwmon_temp_index)
+            if write_sysfs_file(sysfile, temperature):
+                return True
+            else:
+                return False
+        else:
+            return False
+
+
 
     def get_change_event(self):
         """
