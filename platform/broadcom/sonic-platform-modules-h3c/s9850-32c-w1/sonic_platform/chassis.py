@@ -25,7 +25,7 @@ except ImportError as _e:
 
 try:
     from sonic_platform.fan_drawer import FanDrawer
-	FAN_DRAWER_LIST = list(range(0, 5))
+    FAN_DRAWER_LIST = list(range(0, 5))
 except ImportError as e:
     FAN_DRAWER_LIST = []
 

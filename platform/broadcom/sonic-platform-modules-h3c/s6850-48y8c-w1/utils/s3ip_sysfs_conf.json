@@ -92,7 +92,7 @@
     {
       "type":"path",
       "s3ip_path":"/sys_switch/syseeprom",
-      "odm_path":"/sys/switch/syseeprom/raw_data"
+      "odm_path":"/sys/switch/syseeprom/eeprom"
     },
     {
       "type":"dir",
