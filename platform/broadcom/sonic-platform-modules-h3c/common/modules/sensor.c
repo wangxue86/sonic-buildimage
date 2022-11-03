@@ -205,25 +205,44 @@ static ssize_t bsp_sysfs_max6696_set_attr(struct device *kobjs, struct device_at
         break;
     case TEMP1_MAX:
     case TEMP1_MIN:
-        if (sscanf(buf, "%d", &temp) <= 0) {
-            DBG_ECHO(DEBUG_INFO, "Format '%s' error, integer expected! '-1' is stop testing", buf);
-        } else {
-            temp_s8 = (s8)temp;
-            limit_index = attr->index == TEMP1_MAX ? SET_MAX6696_LOCAL_HIGH_ALERT :  
-                         (attr->index == TEMP1_MIN ? SET_MAX6696_LOCAL_LOW_ALERT:-1);
-            DBG_ECHO(DEBUG_ERR, "bsp_sysfs_max6696_set_attr .limit_index = %d", limit_index);
-            DBG_ECHO(DEBUG_ERR, "bsp_sysfs_max6696_set_attr .temp = %d", temp);
+        case TEMP2_MAX:
+        case TEMP2_MIN:
+        case TEMP3_MAX:
+        case TEMP3_MIN:
+        case TEMP1_CRIT:
+        case TEMP2_CRIT:
+        case TEMP3_CRIT:
+        {
+            if (sscanf(buf, "%d", &temp) <= 0)
+            {
+                DBG_ECHO(DEBUG_INFO, "Format '%s' error, integer expected! '-1' is stop testing", buf);
+            }
+            else
+            {
+                temp_s8 = (s8)temp;
+                limit_index = attr->index == TEMP1_MAX ? SET_MAX6696_LOCAL_HIGH_ALERT :
+                              (attr->index == TEMP2_MAX ? SET_MAX6696_REMOTE_CHANNEL1_HIGH_ALERT:
+                               (attr->index == TEMP3_MAX ? SET_MAX6696_REMOTE_CHANNEL2_HIGH_ALERT:
+                                (attr->index == TEMP1_MIN ? SET_MAX6696_LOCAL_LOW_ALERT:
+                                 (attr->index == TEMP2_MIN ? SET_MAX6696_REMOTE_CHANNEL1_LOW_ALERT:
+                                  (attr->index == TEMP3_MIN ? SET_MAX6696_REMOTE_CHANNEL2_LOW_ALERT:
+                                   (attr->index == TEMP1_CRIT ? SET_MAX6696_LOCAL_OT2_LIMIT:
+                                    (attr->index == TEMP2_CRIT ? SET_MAX6696_REMOTE_CHANNEL1_OT2_LIMIT:
+                                     (attr->index == TEMP3_CRIT ? SET_MAX6696_REMOTE_CHANNEL2_OT2_LIMIT:-1))))))));
+                if (bsp_sensor_rw_max6696_limit(REG_WRITE, max6696_index, limit_index, &temp_s8) != ERROR_SUCCESS)
+                {
+                    DBG_ECHO(DEBUG_INFO, "get temp_max for limit_index %d failed!", limit_index);
+                }
+            }
 
-            rv = bsp_sensor_rw_max6696_limit(REG_WRITE, max6696_index, limit_index, &temp_s8);
-            if (rv) 
-                DBG_ECHO(DEBUG_INFO, "get temp_max for limit_index %d failed!", limit_index);
+            break;
         }
-        break;
-    default:
-        DBG_ECHO(DEBUG_ERR, "Not found attribte %d", attr->index);
-        break;
+        default:
+        {
+            DBG_ECHO(DEBUG_ERR, "Not found attribte %d", attr->index);
+            break;
+        }
     }
-    
     return count;
 }
 
@@ -433,18 +452,19 @@ static SENSOR_DEVICE_ATTR(temp1_max, S_IRUGO|S_IWUSR, bsp_sysfs_max6696_get_attr
 static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, bsp_sysfs_max6696_get_attr, NULL, TEMP1_INPUT);
 static SENSOR_DEVICE_ATTR(temp2_label, S_IRUGO, bsp_sysfs_max6696_get_attr, NULL, TEMP2_LABEL);
 static SENSOR_DEVICE_ATTR(temp2_type, S_IRUGO, bsp_sysfs_max6696_get_attr, NULL, TEMP2_TYPE);
-static SENSOR_DEVICE_ATTR(temp2_max, S_IRUGO, bsp_sysfs_max6696_get_attr, NULL, TEMP2_MAX);
+static SENSOR_DEVICE_ATTR(temp2_max, S_IRUGO|S_IWUSR, bsp_sysfs_max6696_get_attr, bsp_sysfs_max6696_set_attr, TEMP2_MAX);
 static SENSOR_DEVICE_ATTR(temp2_input, S_IRUGO, bsp_sysfs_max6696_get_attr, NULL, TEMP2_INPUT);
 static SENSOR_DEVICE_ATTR(temp3_label, S_IRUGO, bsp_sysfs_max6696_get_attr, NULL, TEMP3_LABEL);
 static SENSOR_DEVICE_ATTR(temp3_type, S_IRUGO, bsp_sysfs_max6696_get_attr, NULL, TEMP3_TYPE);
-static SENSOR_DEVICE_ATTR(temp3_max, S_IRUGO, bsp_sysfs_max6696_get_attr, NULL, TEMP3_MAX);
+static SENSOR_DEVICE_ATTR(temp3_max, S_IRUGO|S_IWUSR, bsp_sysfs_max6696_get_attr, bsp_sysfs_max6696_set_attr, TEMP3_MAX);
 static SENSOR_DEVICE_ATTR(temp3_input, S_IRUGO, bsp_sysfs_max6696_get_attr, NULL, TEMP3_INPUT);
 static SENSOR_DEVICE_ATTR(temp1_min, S_IRUGO|S_IWUSR, bsp_sysfs_max6696_get_attr, bsp_sysfs_max6696_set_attr, TEMP1_MIN);
-static SENSOR_DEVICE_ATTR(temp2_min, S_IRUGO, bsp_sysfs_max6696_get_attr, NULL, TEMP2_MIN);
-static SENSOR_DEVICE_ATTR(temp3_min, S_IRUGO, bsp_sysfs_max6696_get_attr, NULL, TEMP3_MIN);
-static SENSOR_DEVICE_ATTR(temp1_crit, S_IRUGO, bsp_sysfs_max6696_get_attr, NULL, TEMP1_CRIT);
-static SENSOR_DEVICE_ATTR(temp2_crit, S_IRUGO, bsp_sysfs_max6696_get_attr, NULL, TEMP2_CRIT);
-static SENSOR_DEVICE_ATTR(temp3_crit, S_IRUGO, bsp_sysfs_max6696_get_attr, NULL, TEMP3_CRIT);
+static SENSOR_DEVICE_ATTR(temp2_min, S_IRUGO|S_IWUSR, bsp_sysfs_max6696_get_attr, bsp_sysfs_max6696_set_attr, TEMP2_MIN);
+static SENSOR_DEVICE_ATTR(temp3_min, S_IRUGO|S_IWUSR, bsp_sysfs_max6696_get_attr, bsp_sysfs_max6696_set_attr, TEMP3_MIN);
+static SENSOR_DEVICE_ATTR(temp1_crit, S_IRUGO|S_IWUSR, bsp_sysfs_max6696_get_attr, bsp_sysfs_max6696_set_attr, TEMP1_CRIT);
+static SENSOR_DEVICE_ATTR(temp2_crit, S_IRUGO|S_IWUSR, bsp_sysfs_max6696_get_attr, bsp_sysfs_max6696_set_attr, TEMP2_CRIT);
+static SENSOR_DEVICE_ATTR(temp3_crit, S_IRUGO|S_IWUSR, bsp_sysfs_max6696_get_attr, bsp_sysfs_max6696_set_attr, TEMP3_CRIT);
+//custom node
 static SENSOR_DEVICE_ATTR(num_temp_sensors, S_IRUGO, bsp_sysfs_temp_sensor_get_attr, NULL, NUM_TEMP_SENSORS);
 static SENSOR_DEVICE_ATTR(temp_alias, S_IRUGO, bsp_sysfs_temp_sensor_get_attr, NULL, TEMP_ALIAS);
 static SENSOR_DEVICE_ATTR(temp_type, S_IRUGO, bsp_sysfs_temp_sensor_get_attr, NULL, TEMP_TYPE);
