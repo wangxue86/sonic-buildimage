@@ -18,6 +18,7 @@ static int loglevel = DEBUG_INFO | DEBUG_ERR;
 #define MAX_TIME_OUT  408
 #define OPTIONS (WDIOF_SETTIMEOUT | WDIOF_KEEPALIVEPING | WDIOF_MAGICCLOSE)
 
+static unsigned long g_wdt_ping_jiffies;
 static unsigned int g_soft_margin = 60;
 static const struct watchdog_info h3c_wdt_ident = {
      .options           = OPTIONS,
@@ -31,18 +32,32 @@ static int watchdog_ping(void)
     board_static_data *bd = bsp_get_board_data();
     ret = bsp_cpu_cpld_write_byte(1, bd->cpld_addr_wd_feed);
     CHECK_IF_ERROR_GOTO_EXIT(ret, "cpld write watchdog FEED_DOG failed!");
+    g_wdt_ping_jiffies = jiffies;
 
 exit:
     return ret;
 
 }
 
+static unsigned int h3c_wdt_get_timeleft(struct watchdog_device *wdd)
+{
+    unsigned long curr_jiffies;
+    unsigned int run_time;
+    unsigned int left_time;
+
+    curr_jiffies = jiffies;
+    run_time = jiffies_to_msecs(curr_jiffies - g_wdt_ping_jiffies) / 1000;
+    left_time = g_soft_margin - run_time;
+
+    return left_time;
+}
 static long watchdog_ioctl(struct watchdog_device *wdd,unsigned int cmd,unsigned long arg)
 {
     int new_margin = -1;
     int ret = ERROR_SUCCESS;
     u8 set_value = 1;
     int new_state = -1;
+    unsigned int left_time;
     board_static_data *bd = bsp_get_board_data();   
     int __user *int_arg = (int __user *)arg;
     void __user *argp = (void __user *)arg;
@@ -92,6 +107,11 @@ static long watchdog_ioctl(struct watchdog_device *wdd,unsigned int cmd,unsigned
             CHECK_IF_ERROR_GOTO_EXIT(ret, "cpld write watchdog wd_enable failed!");
         }            
         break;     
+        case WDIOC_GETTIMELEFT:
+            left_time = h3c_wdt_get_timeleft(wdd);
+            ret = put_user(left_time, int_arg);
+            CHECK_IF_ERROR_GOTO_EXIT(ret, "WDT get timeleft failed!");
+            break;
     default:
         DBG_ECHO(DEBUG_ERR, "Not found command %d", cmd);
         break;            
@@ -105,9 +125,17 @@ static int h3c_wdt_start(struct watchdog_device *wdd)
 {
     int ret = ERROR_SUCCESS;
     board_static_data *bd = bsp_get_board_data();
-    ret = bsp_cpu_cpld_write_byte(1, bd->cpld_addr_wd_enable);
-    CHECK_IF_ERROR_GOTO_EXIT(ret, "cpld write watchdog wd_enable failed!");
-    
+    u8 get_val = 0;
+
+    ret = bsp_cpu_cpld_read_byte(&get_val, bd->cpld_addr_wd_enable);
+    CHECK_IF_ERROR_GOTO_EXIT(ret, "cpld read watchdog enable failed!");
+    if (((get_val & bd->cpld_mask_wd_enable) >> bd->cpld_offs_wd_enable) == 0)
+    {
+        g_wdt_ping_jiffies = jiffies;
+        ret = bsp_cpu_cpld_write_byte(1, bd->cpld_addr_wd_enable);
+        CHECK_IF_ERROR_GOTO_EXIT(ret, "cpld write watchdog wd_enable failed!");
+    }
+
 exit:
     return ret;
 }
@@ -135,7 +163,7 @@ static struct watchdog_ops h3c_wdtops = {
     .start           = h3c_wdt_start,
     .stop            = h3c_wdt_stop,
     .ping            = h3c_wdt_ping,
-    
+    .get_timeleft    = h3c_wdt_get_timeleft
 };
     
 static struct watchdog_device h3c_wdd = {
@@ -145,18 +173,22 @@ static struct watchdog_device h3c_wdd = {
 
 static int __init wdt_init_module(void)
 {
-    int rv = 0;
-    watchdog_set_nowayout(&h3c_wdd,WATCHDOG_NOWAYOUT);
-    watchdog_set_restart_priority(&h3c_wdd,128);
+    int ret = ERROR_SUCCESS;
 
-    rv = watchdog_register_device(&h3c_wdd);
-    if (rv) {
+    watchdog_set_nowayout(&h3c_wdd, WATCHDOG_NOWAYOUT);
+    watchdog_set_restart_priority(&h3c_wdd, 128);
+    ret = watchdog_register_device(&h3c_wdd);
+    if (ret == ERROR_SUCCESS)
+    {
         INIT_PRINT("CPLD watchdog module init finished and success!");
-    } else {
+    }
+    else
+    {
         DBG_ECHO(DEBUG_ERR, "CPLD watchdog module int failed!");
     }
 
-    return rv;
+
+    return ret;
 }
 
 static void __exit wdt_cleanup_module(void)
