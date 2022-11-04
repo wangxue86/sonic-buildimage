@@ -132,7 +132,7 @@ def print_temp_data(dir, num):
     print(msg)
 
 def print_mac_temp(num):
-    msg = "        hotspot%d    : %.1f C  (low = %.1f C, high = %.1f C)" % (num, get_mac_temp(), -55, 70)
+    msg = "        hotspot%d    : %.1f C  (low = %.1f C, high = %.1f C)" % (num, get_mac_temp(), 0, 88)
     print(msg)
 
 def print_fan_data(fan_number):

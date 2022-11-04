@@ -160,7 +160,7 @@ def get_mac_temp():
     temp_code = t1 | (t2 << 8)
     temp_val = 434.1 - ((12500000 / float(temp_code) - 1) * 0.5350) 
 
-    if temp_val > 130:
+    if temp_val < -70 or temp_val > 200:
         temp_val = last_temp
     else:
         last_temp = temp_val
