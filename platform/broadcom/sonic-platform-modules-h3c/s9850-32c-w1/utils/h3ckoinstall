@@ -113,6 +113,6 @@ rename_mgmt_port_to_eth0
 
 install_s3ip_sysfs
 
-#install_ipmitool
+install_ipmitool
 
 #generate_pcie_yaml
