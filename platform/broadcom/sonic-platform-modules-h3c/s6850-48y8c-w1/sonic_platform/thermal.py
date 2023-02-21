@@ -286,7 +286,7 @@ class Thermal(ThermalBase):
         not
         """
         if temperature > 127 or temperature < -127:
-            print "The temperature out of range"
+            print("The temperature out of range")
             return False
 
         if self.is_mac_thermal or self.is_cpu_thermal:
