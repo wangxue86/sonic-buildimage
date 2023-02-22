@@ -66,9 +66,8 @@ rename_mgmt_port_to_eth0 () {
         done
                                       
         if [ -z $MGMT_CURR_ETH ]; then
-                logger "not found mgmt port in $ETH_LIST"
-                return
-		
+                logger "not found mgmt port in $ETH_LIST , make eth1 as default"
+                MGMT_CURR_ETH="eth1"
         fi
 	                                   
         if [ $MGMT_CURR_ETH != 'eth0' ]; then
