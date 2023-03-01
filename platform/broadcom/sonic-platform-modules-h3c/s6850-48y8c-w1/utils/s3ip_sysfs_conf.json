@@ -1,0 +1,478 @@
+{
+  "s3ip_syfs_paths": [
+    {
+      "type":"dir",
+      "s3ip_path":"/sys_switch/temp_sensor/",
+      "odm_path":"/sys/switch/sensor/",
+      "path":[
+        {
+          "type":"path",
+          "s3ip_path":"number",
+          "odm_path":"num_temp_sensors"
+        },
+        {
+          "type":"dir",
+          "s3ip_path":"temp{}/",
+          "odm_path":"temp{}/",
+          "odm_start_num":"1",
+          "s3ip_start_num":"1",
+          "number":"num_temp_sensors",
+          "path": [
+            {
+              "type": "path",
+              "s3ip_path":"alias",
+              "odm_path":"temp_alias"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"type",
+              "odm_path":"temp_type"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"max",
+              "odm_path":"temp_max"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"min",
+              "odm_path":"temp_min"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"value",
+              "odm_path":"temp_input"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type":"dir",
+      "s3ip_path":"/sys_switch/vol_sensor/",
+      "odm_path":"/sys/switch/sensor/",
+      "path":[
+        {
+          "type":"path",
+          "s3ip_path":"number",
+          "odm_path":"in_num_sensors"
+        },
+        {
+          "type":"dir",
+          "s3ip_path":"vol{}/",
+          "odm_path":"in{}/",
+          "odm_start_num":"0",
+          "s3ip_start_num":"1",
+          "number":"in_num_sensors",
+          "path": [
+            {
+              "type": "path",
+              "s3ip_path":"alias",
+              "odm_path":"in_alias"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"type",
+              "odm_path":"in_type"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"max",
+              "odm_path":"in_max"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"min",
+              "odm_path":"in_crit"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type":"path",
+      "s3ip_path":"/sys_switch/syseeprom",
+      "odm_path":"/sys/switch/syseeprom/eeprom"
+    },
+    {
+      "type":"dir",
+      "s3ip_path":"/sys_switch/fan/",
+      "odm_path":"/sys/switch/fan/",
+      "path":[
+        {
+          "type": "path",
+          "s3ip_path":"number",
+          "odm_path":"num_fans"
+        },
+        {
+          "type": "dir",
+          "s3ip_path":"fan{}/",
+          "odm_path":"fan{}/",
+          "odm_start_num":"1",
+          "s3ip_start_num":"1",
+          "number":"num_fans",
+          "path": [
+            {
+              "type": "path",
+              "s3ip_path":"model_name",
+              "odm_path":"product_name"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"serial_number",
+              "odm_path":"sn"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"part_number",
+              "odm_path":"pn"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"hardware_version",
+              "odm_path":"hw_version"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"motor_number",
+              "odm_path":"num_motors"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"status",
+              "odm_path":"status"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"led_status",
+              "odm_path":"led_status"
+            },
+            {
+              "type": "dir",
+              "s3ip_path":"motor{}/",
+              "odm_path":"motor{}/",
+              "odm_start_num":"0",
+              "s3ip_start_num":"1",
+              "number":"num_motors",
+              "path": [
+                {
+                  "type": "path",
+                  "s3ip_path":"speed",
+                  "odm_path":"motor_speed"
+                },
+                {
+                  "type": "path",
+                  "s3ip_path":"speed_tolerance",
+                  "odm_path":"speed_tolerance"
+                },
+                {
+                  "type": "path",
+                  "s3ip_path":"speed_target",
+                  "odm_path":"speed_target"
+                },
+                {
+                  "type": "path",
+                  "s3ip_path":"ratio",
+                  "odm_path":"ratio"
+                },
+                {
+                  "type": "path",
+                  "s3ip_path":"direction",
+                  "odm_path":"direction"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type":"dir",
+      "s3ip_path":"/sys_switch/psu/",
+      "odm_path":"/sys/switch/psu/",
+      "path":[
+        {
+          "type": "path",
+          "s3ip_path":"number",
+          "odm_path":"num_psus"
+        },
+        {
+          "type": "dir",
+          "s3ip_path":"psu{}/",
+          "odm_path":"psu{}/",
+          "odm_start_num":"1",
+          "s3ip_start_num":"1",
+          "number":"num_psus",
+          "path": [
+            {
+              "type": "path",
+              "s3ip_path":"model_name",
+              "odm_path":"product_name"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"serial_number",
+              "odm_path":"sn"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"in_curr",
+              "odm_path":"in_curr"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"in_vol",
+              "odm_path":"in_vol"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"in_power",
+              "odm_path":"in_power"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"out_curr",
+              "odm_path":"out_curr"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"out_vol",
+              "odm_path":"out_vol"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"out_power",
+              "odm_path":"out_power"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"fan_speed",
+              "odm_path":"fan"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"led_status",
+              "odm_path":"led_status"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"present",
+              "odm_path":"present"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"out_status",
+              "odm_path":"out_status"
+            },
+            {
+              "type": "dir",
+              "s3ip_path": "temp{}/",
+              "odm_path": " ",
+              "s3ip_start_num": "1",
+              "number": "1",
+              "number_type": "int",
+              "path": [
+                {
+                  "type": "path",
+                  "s3ip_path":"alias",
+                  "odm_path":"temp_alias"
+                },
+                {
+                  "type": "path",
+                  "s3ip_path":"type",
+                  "odm_path":"temp_type"
+                },
+                {
+                  "type": "path",
+                  "s3ip_path":"max",
+                  "odm_path":"temp_max"
+                },
+                {
+                  "type": "path",
+                  "s3ip_path":"min",
+                  "odm_path":"temp_min"
+                },
+                {
+                  "type": "path",
+                  "s3ip_path":"value",
+                  "odm_path":"temp_input"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type":"dir",
+      "s3ip_path":"/sys_switch/transceiver/",
+      "odm_path":"/sys/switch/xcvr/",
+      "path":[
+        {
+          "type": "path",
+          "s3ip_path":"power_on",
+          "odm_path":"power_on"
+        },
+        {
+          "type": "dir",
+          "s3ip_path":"eth{}/",
+          "odm_path":"unsure",
+          "number":"unsure",
+          "path": [
+            {
+              "type": "path",
+              "s3ip_path":"eeprom",
+              "odm_path":"eeprom/raw"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"present",
+              "odm_path":"module_present"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"power_on",
+              "odm_path":"power_on"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"reset",
+              "odm_path":"reset"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"low_power_mode",
+              "odm_path":"lpmode"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"interrupt",
+              "odm_path":"interrupt"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"tx_fault",
+              "odm_path":"tx_fault"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"tx_disable",
+              "odm_path":"tx_dis"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"rx_los",
+              "odm_path":"rx_los"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"present",
+              "odm_path":"pre_n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type":"dir",
+      "s3ip_path":"/sys_switch/sysled/",
+      "odm_path":"/sys/switch/sysled/",
+      "path":[
+        {
+          "type": "path",
+          "s3ip_path":"sys_led_status",
+          "odm_path":"sys_led_status_front"
+        },
+        {
+          "type": "path",
+          "s3ip_path":"bmc_led_status",
+          "odm_path":"bmc_led_status_front"
+        },
+        {
+          "type": "path",
+          "s3ip_path":"fan_led_status",
+          "odm_path":"fan_led_status_front"
+        },
+        {
+          "type": "path",
+          "s3ip_path":"psu_led_status",
+          "odm_path":"psu_led_status_front"
+        },
+        {
+          "type": "path",
+          "s3ip_path":"id_led_status",
+          "odm_path":"id_led_status_front"
+        }
+      ]
+    },
+    {
+      "type":"dir",
+      "s3ip_path":"/sys_switch/cpld/",
+      "odm_path":"/sys/switch/cpld/",
+      "path":[
+        {
+          "type": "path",
+          "s3ip_path":"number",
+          "odm_path":"num_cplds"
+        },
+        {
+          "type": "dir",
+          "s3ip_path":"cpld{}/",
+          "odm_path":"cpld{}/",
+          "odm_start_num":"0",
+          "s3ip_start_num":"1",
+          "number":"num_cplds",
+          "path":[
+            {
+              "type": "path",
+              "s3ip_path":"alias",
+              "odm_path":"alias"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"type",
+              "odm_path":"type"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"firmware_version",
+              "odm_path":"hw_version"
+            },
+            {
+              "type": "path",
+              "s3ip_path":"board_version",
+              "odm_path":"board_version"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type":"dir",
+      "s3ip_path":"/sys_switch/watchdog/",
+      "odm_path":"/sys/class/watchdog/watchdog0/",
+      "path":[
+        {
+          "type": "path",
+          "s3ip_path":"identify",
+          "odm_path":"identity"
+        },
+        {
+          "type": "path",
+          "s3ip_path":"state",
+          "odm_path":"state"
+        },
+        {
+          "type": "path",
+          "s3ip_path":"timeout",
+          "odm_path":"timeout"
+        },
+        {
+          "type": "path",
+          "s3ip_path":"timeleft",
+          "odm_path":"timeleft"
+        }
+      ]
+    }
+  ]
+}
