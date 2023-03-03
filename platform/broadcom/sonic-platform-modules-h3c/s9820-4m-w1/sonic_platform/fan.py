@@ -569,3 +569,16 @@ class Fan(FanBase):
             return False
 
         return fan_product_name
+
+    def get_name(self):
+        """
+        Retrieves the name of the device
+
+        Returns:
+            string: The name of the device
+        """
+        if self.is_psu_fan:
+            return "PSU {} FAN {}".format(self._index + 1, 1)
+
+        return "drawer0 FAN{}".format(self._index + 1)
+

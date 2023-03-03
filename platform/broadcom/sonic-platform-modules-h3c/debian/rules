@@ -37,15 +37,15 @@ clean:
 	dh_testroot
 	dh_clean
 
-build:
-	#make modules -C $(KERNEL_SRC)/build M=$(MODULE_SRC)
-	(for mod in $(MODULE_DIRS); do \
-		make modules -C $(KERNEL_SRC)/build M=$(MOD_SRC_DIR)/$${mod}/modules; \
-		cd $(MOD_SRC_DIR)/$${mod}; \
-		$(PYTHON3) setup.py build ; \
-		$(PYTHON3) setup.py bdist_wheel -d $(MOD_SRC_DIR)/$${mod}/$(DEVICE_DIR); \
-		cd $(MOD_SRC_DIR); \
-	done)
+build: $(MODULE_DIRS)
+	@echo "build success!"
+
+$(MODULE_DIRS):
+	make modules -C $(KERNEL_SRC)/build M=$(MOD_SRC_DIR)/$@/modules; \
+	cd $(MOD_SRC_DIR)/$${mod}; \
+	$(PYTHON3) setup.py build ; \
+	$(PYTHON3) setup.py bdist_wheel -d $(MOD_SRC_DIR)/$@/$(DEVICE_DIR); \
+	cd $(MOD_SRC_DIR);
 
 binary: binary-arch binary-indep
 	# Nothing to do
@@ -64,20 +64,17 @@ binary-indep:
 	dh_installdirs
 
 	# Custom package commands
-	(for mod in $(MODULE_DIRS); do \
-		dh_installdirs -p$(PACKAGE_PRE_NAME)-$${mod} $(KERNEL_SRC)/$(INSTALL_MOD_DIR); \
-		dh_installdirs -p$(PACKAGE_PRE_NAME)-$${mod} usr/local/bin; \
-		dh_installdirs -p$(PACKAGE_PRE_NAME)-$${mod} lib/systemd/system; \
-		dh_installdirs -p$(PACKAGE_PRE_NAME)-$${mod} etc/sonic/; \
-		cp $(MOD_SRC_DIR)/$(MODULE_DIR_COMMON)/$(MODULE_DIR)/*.ko $(MOD_SRC_DIR)/$${mod}/$(MODULE_DIR)/;\
-		cp $(MOD_SRC_DIR)/$${mod}/$(MODULE_DIR)/*.ko debian/$(PACKAGE_PRE_NAME)-$${mod}/$(KERNEL_SRC)/$(INSTALL_MOD_DIR); \
-		cp $(MOD_SRC_DIR)/$${mod}/$(UTILS_DIR)/* debian/$(PACKAGE_PRE_NAME)-$${mod}/usr/local/bin/; \
-		cp $(MOD_SRC_DIR)/$${mod}/$(CONF_DIR)/* debian/$(PACKAGE_PRE_NAME)-$${mod}/etc/sonic/; \
-		cp $(MOD_SRC_DIR)/$${mod}/$(SERVICE_DIR)/*.service debian/$(PACKAGE_PRE_NAME)-$${mod}/lib/systemd/system/; \
-		cd $(MOD_SRC_DIR)/$${mod}; \
-		$(PYTHON3) setup.py install --root=$(MOD_SRC_DIR)/debian/$(PACKAGE_PRE_NAME)-$${mod} --install-layout=deb; \
-		cd $(MOD_SRC_DIR); \
-	done)
+	dh_installdirs -p$(PACKAGE_PRE_NAME)-$@ $(KERNEL_SRC)/$(INSTALL_MOD_DIR); \
+	dh_installdirs -p$(PACKAGE_PRE_NAME)-$@ usr/local/bin; \
+	dh_installdirs -p$(PACKAGE_PRE_NAME)-$@ lib/systemd/system; \
+	dh_installdirs -p$(PACKAGE_PRE_NAME)-$@ etc/sonic/; \
+	cp $(MOD_SRC_DIR)/$@/$(MODULE_DIR)/*.ko debian/$(PACKAGE_PRE_NAME)-$@/$(KERNEL_SRC)/$(INSTALL_MOD_DIR); \
+	cp $(MOD_SRC_DIR)/$@/$(UTILS_DIR)/* debian/$(PACKAGE_PRE_NAME)-$@/usr/local/bin/; \
+	cp $(MOD_SRC_DIR)/$@/$(SERVICE_DIR)/*.service debian/$(PACKAGE_PRE_NAME)-$@/lib/systemd/system/; \
+	cd $(MOD_SRC_DIR)/$@; \
+	$(PYTHON3) setup.py install --root=$(MOD_SRC_DIR)/debian/$(PACKAGE_PRE_NAME)-$@ --install-layout=deb; \
+	cd $(MOD_SRC_DIR);
+
 	# Resuming debhelper scripts
 	dh_testroot
 	dh_install
