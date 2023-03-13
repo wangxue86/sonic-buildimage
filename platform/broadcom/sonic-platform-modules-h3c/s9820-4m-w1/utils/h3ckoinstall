@@ -1,0 +1,101 @@
+#!/bin/bash
+
+install_driver () {
+#EXPKVER=4.9.11-2-amd64
+	EXPKVER=$(uname -r)
+	KVER=$(uname -r)
+
+
+	MODPATH=/lib/modules/$KVER/extra
+	echo "Module path: $MODPATH"
+	pushd "$MODPATH"
+		MYMODS="bsp_base syseeprom psu cpu_info sensor fan cpld xcvr sysled slot sw_watchdog"
+   
+		#find and reverse the mods to be removed
+		for m in $MYMODS
+		do
+			if [ ! -z "$(lsmod | grep ${m})" ]; then
+				RMMODS="$m $RMMODS"
+			fi
+		done
+
+		if [ ! -z "$RMMODS" ];
+		then
+			echo "Removing old kernel modules: $RMMODS"
+			for m in $RMMODS
+			do
+				echo "  Removing $m"
+				rmmod "${m}"
+			done
+		fi
+
+		echo "Installing kernel modules"
+		for m in $MYMODS
+		do
+			echo "  Inserting $m"
+			insmod "${m}.ko"
+		done
+		logger "bsp driver installed"
+	popd
+	if [ -f /sys/switch/xcvr/power_on ]
+	then
+		echo 1 > /sys/switch/xcvr/power_on
+	fi
+}
+
+
+rename_mgmt_port_to_eth0 () {
+
+        MGMT_PCI_BUS_NO=`lspci | grep "Gigabit Network Connection" | sed 's/ /\n/g' | sed -n '1p'`
+        ETH_LIST="eth0 eth1 eth2 eth3"
+        MGMT_CURR_ETH=""
+                          
+        for e in $ETH_LIST
+        do
+                if [ -z "$(etool -i ${e} | grep $MGMT_PCI_BUS_NO)" ]; then
+                        logger "${e} is not mgmt port"
+                else
+                        MGMT_CURR_ETH=${e}
+                        logger "found mgmt port current at ${e}"
+                        break
+                fi
+        done
+                                      
+        if [ -z $MGMT_CURR_ETH ]; then
+                logger "not found mgmt port in $ETH_LIST"
+                return
+		
+        fi
+                                             
+        if [ $MGMT_CURR_ETH != 'eth0' ]; then
+                ifconfig $MGMT_CURR_ETH down
+                ifconfig eth0 down
+                ip link set eth0 name eth4
+                ip link set $MGMT_CURR_ETH name eth0
+                ip link set eth4 name $MGMT_CURR_ETH
+                ifconfig eth0 up
+                logger "mgmt $MGMT_CURR_ETH is renamed to eth0"
+                dhclient
+        else
+                logger "mgmt is current at eth0, nothing to do"
+                dhclient
+        fi
+}
+
+
+install_ipmitool () {
+        #sudo modprobe ipmi_watchdog
+        sudo modprobe ipmi_poweroff
+        sudo modprobe ipmi_devintf
+        sudo modprobe ipmi_si
+        sudo modprobe ipmi_msghandler
+        sleep 1
+        sudo ipmitool mc watchdog off
+        sudo ipmitool raw 0x04 0x12 0x02 0x00
+        sudo ipmitool raw 0x04 0x13 0x02 0x00 0x00
+}
+install_driver
+
+rename_mgmt_port_to_eth0
+
+install_ipmitool
