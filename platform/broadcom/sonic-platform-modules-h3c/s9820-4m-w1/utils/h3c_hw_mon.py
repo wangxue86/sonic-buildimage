@@ -372,9 +372,9 @@ class TD3_hw_monitor(object):
                 try:
                     voltage_in = float(voltage_in)
                     if voltage_in <= PSU_AC_IN_VOL_LOW:
-                        log_notice('%%PMON-5-VOLTAGE_HIGH: %s voltage %sV is lower than min threshold %sV', "psu%d" %(i + 1, voltage_in, PSU_AC_IN_VOL_LOW))
+                        log_notice('%%PMON-5-VOLTAGE_LOW: voltage %sV is lower than min threshold %sV    psu%d' %(voltage_in/1000, PSU_AC_IN_VOL_LOW, i+1))
                     elif voltage_in >= PSU_AC_IN_VOL_HI:
-                        log_notice('%%PMON-5-VOLTAGE_HIGH: %s voltage %sV is larger than max threshold %sV', "psu%d"%(i + 1, voltage_in, PSU_AC_IN_VOL_HI))
+                        log_notice('%%PMON-5-VOLTAGE_HIGH: voltage %sV is larger than max threshold %sV  psu%d'%(voltage_in/1000, PSU_AC_IN_VOL_HI, i+1))
                 except ValueError as err:
                     pass
     
