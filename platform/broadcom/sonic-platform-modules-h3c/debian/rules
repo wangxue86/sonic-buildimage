@@ -9,57 +9,48 @@
 include /usr/share/dpkg/pkg-info.mk
 
 # Uncomment this to turn on verbose mode.
-export DH_VERBOSE=1
+#export DH_VERBOSE=1
 
 export INSTALL_MOD_DIR:=extra
-
-PYTHON         ?= python2
-PYTHON3        ?= python3
 
 PACKAGE_PRE_NAME := platform-modules-h3c
 KVERSION   ?= $(shell uname -r)
 KERNEL_SRC :=  /lib/modules/$(KVERSION)
 MOD_SRC_DIR:= $(shell pwd)
-MODULE_DIRS := s6850-48y8c-w1 s9850-32c-w1
-
+MODULE_DIRS += s6850-48y8c-w1
+MODULE_DIRS += s9820-4m-w1
 MODULE_DIR_COMMON := common
 MODULE_DIR := modules
-TOOLS_DIR := tools
 UTILS_DIR := utils
 SERVICE_DIR := service
-DEVICE_DIR := device
 CONF_DIR := conf
+DEVICE_DIR := device
 
 %:
-	dh $@ --with systemd,python2,python3 --buildsystem=pybuild
+	dh $@ --with systemd,python3 --buildsystem=pybuild
+build: $(MODULE_DIRS)
+	@echo "xixixi $(MODULE_DIRS)"
+	@echo "build success!"
 
-clean:
-	dh_testdir
-	dh_testroot
-	dh_clean
-	(for mod in $(MODULE_DIRS); do \
-		rm -f $(MOD_SRC_DIR)/$${mod}/$(DEVICE_DIR)/*.whl; \
-		rm -f $(MOD_SRC_DIR)/$${mod}/$(MODULE_DIR)/*.ko; \
-		rm -f $(MOD_SRC_DIR)/$${mod}/$(MODULE_DIR)/*.order; \
-		rm -f $(MOD_SRC_DIR)/$(MODULE_DIR_COMMON)/$(MODULE_DIR)/*.ko; \
-		rm -f $(MOD_SRC_DIR)/$(MODULE_DIR_COMMON)/$(MODULE_DIR)/*.o*; \
-		rm -f $(MOD_SRC_DIR)/$(MODULE_DIR_COMMON)/$(MODULE_DIR)/*.mod*; \
-		rm -f $(MOD_SRC_DIR)/$(MODULE_DIR_COMMON)/$(MODULE_DIR)/*.order; \
-	done)
-build:
-	(for mod in $(MODULE_DIRS); do \
-		make modules -C $(KERNEL_SRC)/build M=$(MOD_SRC_DIR)/$${mod}/modules; \
-		cd $(MOD_SRC_DIR)/$${mod}; \
-		$(PYTHON) setup.py build ; \
-		$(PYTHON) setup.py bdist_wheel -d $(MOD_SRC_DIR)/$${mod}/$(DEVICE_DIR); \
-		$(PYTHON3) setup.py build ; \
-		$(PYTHON3) setup.py bdist_wheel -d $(MOD_SRC_DIR)/$${mod}/$(DEVICE_DIR); \
-		cd $(MOD_SRC_DIR); \
-	done)
-	#add common
-	make modules -C $(KERNEL_SRC)/build M=$(MOD_SRC_DIR)/$(MODULE_DIR_COMMON)/modules;
-	
+custom_clean_dirs := $(addprefix _clean_,$(clean_dirs) )
 
+$(MODULE_DIRS):
+	make modules -C $(KERNEL_SRC)/build M=$(MOD_SRC_DIR)/$@/modules; \
+	cd $(MOD_SRC_DIR)/$@; \
+	python3 setup.py build ; \
+	python3 setup.py bdist_wheel -d $(MOD_SRC_DIR)/$@/$(DEVICE_DIR); \
+	cd $(MOD_SRC_DIR);
+	# Custom package commands
+	dh_installdirs -p$(PACKAGE_PRE_NAME)-$@ $(KERNEL_SRC)/$(INSTALL_MOD_DIR); \
+	dh_installdirs -p$(PACKAGE_PRE_NAME)-$@ usr/local/bin; \
+	dh_installdirs -p$(PACKAGE_PRE_NAME)-$@ lib/systemd/system; \
+	dh_installdirs -p$(PACKAGE_PRE_NAME)-$@ etc/sonic/; \
+	cp $(MOD_SRC_DIR)/$@/$(MODULE_DIR)/*.ko debian/$(PACKAGE_PRE_NAME)-$@/$(KERNEL_SRC)/$(INSTALL_MOD_DIR); \
+	cp $(MOD_SRC_DIR)/$@/$(UTILS_DIR)/* debian/$(PACKAGE_PRE_NAME)-$@/usr/local/bin/; \
+	cp $(MOD_SRC_DIR)/$@/$(SERVICE_DIR)/*.service debian/$(PACKAGE_PRE_NAME)-$@/lib/systemd/system/; \
+	cd $(MOD_SRC_DIR)/$@; \
+	python3 setup.py install --root=$(MOD_SRC_DIR)/debian/$(PACKAGE_PRE_NAME)-$@ --install-layout=deb; \
+	cd $(MOD_SRC_DIR);
 
 binary: binary-arch binary-indep
 	# Nothing to do
@@ -77,29 +68,6 @@ binary-indep:
 	dh_testdir
 	dh_installdirs
 
-	# Custom package commands
-	(for mod in $(MODULE_DIRS); do \
-		dh_installdirs -p$(PACKAGE_PRE_NAME)-$${mod} $(KERNEL_SRC)/$(INSTALL_MOD_DIR); \
-		dh_installdirs -p$(PACKAGE_PRE_NAME)-$${mod} usr/local/bin; \
-		dh_installdirs -p$(PACKAGE_PRE_NAME)-$${mod} lib/systemd/system; \
-		dh_installdirs -p$(PACKAGE_PRE_NAME)-$${mod} etc/sonic/; \
-		dh_installdirs -p$(PACKAGE_PRE_NAME)-$${mod} usr/lib/; \
-		dh_installdirs -p$(PACKAGE_PRE_NAME)-$${mod} usr/share/sonic/device/x86_64-h3c_$${mod}-r0/; \
-		cp $(MOD_SRC_DIR)/$${mod}/$(DEVICE_DIR)/*py2*.whl debian/$(PACKAGE_PRE_NAME)-$${mod}/usr/share/sonic/device/x86_64-h3c_$${mod}-r0/;\
-		cp $(MOD_SRC_DIR)/$${mod}/$(DEVICE_DIR)/*py3*.whl debian/$(PACKAGE_PRE_NAME)-$${mod}/usr/share/sonic/device/x86_64-h3c_$${mod}-r0/;\
-		cp $(MOD_SRC_DIR)/$(MODULE_DIR_COMMON)/$(MODULE_DIR)/dom-fpga/*.ko $(MOD_SRC_DIR)/$${mod}/$(MODULE_DIR)/;\
-		cp $(MOD_SRC_DIR)/$(MODULE_DIR_COMMON)/$(MODULE_DIR)/*.ko $(MOD_SRC_DIR)/$${mod}/$(MODULE_DIR)/;\
-		cp $(MOD_SRC_DIR)/$(MODULE_DIR_COMMON)/$(TOOLS_DIR)/*     debian/$(PACKAGE_PRE_NAME)-$${mod}/usr/local/bin/;\
-		cp $(MOD_SRC_DIR)/$(MODULE_DIR_COMMON)/$(MODULE_DIR)/*.so debian/$(PACKAGE_PRE_NAME)-$${mod}/usr/lib/; \
-		cp $(MOD_SRC_DIR)/$${mod}/$(MODULE_DIR)/*.ko debian/$(PACKAGE_PRE_NAME)-$${mod}/$(KERNEL_SRC)/$(INSTALL_MOD_DIR); \
-		cp $(MOD_SRC_DIR)/$${mod}/$(UTILS_DIR)/* debian/$(PACKAGE_PRE_NAME)-$${mod}/usr/local/bin/; \
-		cp $(MOD_SRC_DIR)/$${mod}/$(SERVICE_DIR)/*.service debian/$(PACKAGE_PRE_NAME)-$${mod}/lib/systemd/system/; \
-		cp $(MOD_SRC_DIR)/$${mod}/$(CONF_DIR)/* debian/$(PACKAGE_PRE_NAME)-$${mod}/usr/local/bin/; \
-		cd $(MOD_SRC_DIR)/$${mod}; \
-		$(PYTHON) setup.py install --root=$(MOD_SRC_DIR)/debian/$(PACKAGE_PRE_NAME)-$${mod} --install-layout=deb; \
-		$(PYTHON3) setup.py install --root=$(MOD_SRC_DIR)/debian/$(PACKAGE_PRE_NAME)-$${mod} --install-layout=deb; \
-		cd $(MOD_SRC_DIR); \
-	done)
 	# Resuming debhelper scripts
 	dh_testroot
 	dh_install
@@ -116,4 +84,11 @@ binary-indep:
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
-.PHONY: build binary binary-arch binary-indep clean
+
+clean:
+	$(custom_clean_dirs)
+	dh_testdir
+	dh_testroot
+	dh_clean
+
+.PHONY: build $(MODULE_DIRS) binary binary-arch binary-indep clean

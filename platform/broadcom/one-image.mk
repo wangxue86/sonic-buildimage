@@ -64,9 +64,10 @@ $(SONIC_ONE_IMAGE)_LAZY_INSTALLS += $(DELL_S6000_PLATFORM_MODULE) \
                                $(CEL_SILVERSTONE_PLATFORM_MODULE) \
                                $(JUNIPER_QFX5200_PLATFORM_MODULE) \
                                $(DELTA_AGC032_PLATFORM_MODULE) \
-                               $(H3C_S6850_48Y8C_W1_PLATFORM_MODULE) \
-                               $(H3C_S9850_32C_W1_PLATFORM_MODULE)
-                               
+                               $(H3C_S6850-48Y8C-W1_PLATFORM_MODULE) \
+                               $(H3C_S9820-4M-W1_PLATFORM_MODULE)
+
+$(SONIC_ONE_IMAGE)_LAZY_BUILD_INSTALLS = $(BRCM_OPENNSL_KERNEL) $(BRCM_DNX_OPENNSL_KERNEL)
 ifeq ($(INSTALL_DEBUG_TOOLS),y)
 $(SONIC_ONE_IMAGE)_DOCKERS += $(SONIC_INSTALL_DOCKER_DBG_IMAGES)
 $(SONIC_ONE_IMAGE)_DOCKERS += $(filter-out $(patsubst %-$(DBG_IMAGE_MARK).gz,%.gz, $(SONIC_INSTALL_DOCKER_DBG_IMAGES)), $(SONIC_INSTALL_DOCKER_IMAGES))
